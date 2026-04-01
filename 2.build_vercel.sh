@@ -2,4 +2,4 @@
 set -e
 
 npm run build
-npx vercel --prod
+npx vercel --prod --name onetwo-punch
