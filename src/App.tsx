@@ -130,7 +130,8 @@ export default function App() {
     setTimeLeft(tl)
     startTimeRef.current = performance.now()
 
-    timerRef.current = setTimeout(() => {
+    timerRef.current = setTimeout(() => { return // TODO: 디자인 작업 후 제거
+    // eslint-disable-next-line no-unreachable
       if (vibrationRef.current) navigator.vibrate?.([80, 30, 80])
       setCombo(0)
       setFlash('MISS')
@@ -204,9 +205,8 @@ export default function App() {
   }, [clearTimers, nextRound])
 
   const handleAdCharge = useCallback(() => {
-    if (livesRef.current >= MAX_LIVES) return
     showAd(() => {
-      const next = Math.min(MAX_LIVES, livesRef.current + 1)
+      const next = livesRef.current + 1
       setLives(next)
       livesRef.current = next
     })
@@ -224,14 +224,14 @@ export default function App() {
         ))}
         <span className="hp-text">{lives}/{MAX_LIVES}</span>
       </div>
-      {lives < MAX_LIVES && (
-        <button className="charge-btn" onClick={handleAdCharge}>충전 ▶</button>
-      )}
-      {lives < MAX_LIVES && chargeCountdown > 0 && (
-        <span className="charge-timer">
-          {Math.floor(chargeCountdown / 60)}:{String(chargeCountdown % 60).padStart(2, '0')}
-        </span>
-      )}
+      <button className="charge-btn" onClick={handleAdCharge}>
+        <span>📺 충전</span>
+        {lives < MAX_LIVES && chargeCountdown > 0 && (
+          <span className="charge-timer-inline">
+            {Math.floor(chargeCountdown / 60)}:{String(chargeCountdown % 60).padStart(2, '0')}
+          </span>
+        )}
+      </button>
     </div>
   )
 
@@ -263,17 +263,12 @@ export default function App() {
   if (gameState === 'IDLE') {
     return (
       <div className="home">
-        <div className="home-title">⚡ 원투펀치 ⚡</div>
-        <div className="best-score">⚡ 최고 점수: {bestScore}</div>
-        {livesBlock}
-        <div className="home-boxer">
-          <span className="glove left">🥊</span>
-          <span className="boxer-body">🧍</span>
-          <span className="glove right">🥊</span>
+        <div className="best-score">⚡ 최고 점수: {bestScore} ⚡</div>
+        <div className="home-bottom">
+          {livesBlock}
+<button className="start-btn" onClick={startGame}>시작하기</button>
+          <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
         </div>
-        <p className="home-desc">상대가 막은 반대쪽을 쳐라!</p>
-        <button className="overlay-btn" onClick={startGame}>시작하기</button>
-        <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
       </div>
     )
   }
@@ -281,10 +276,8 @@ export default function App() {
   return (
     <div className="game">
       <div className="hp-bar">
-        {Array.from({ length: MAX_LIVES }).map((_, i) => (
-          <span key={i} className={`hp-heart ${i < lives ? 'active' : 'empty'}`}>🥊</span>
-        ))}
         <span className="hp-text">{lives}/{MAX_LIVES}</span>
+        <div className="score-info">점수: {score}</div>
       </div>
 
       <div key={hitEffectKey} className={`opponent ${flash === 'MISS' ? 'miss' : ''}`}>
@@ -304,8 +297,6 @@ export default function App() {
         value={timerPct}
         max={1}
       />
-
-      <div className="score-info">점수: {score}</div>
 
       <div className="controls">
         <button className="punch-btn" onPointerDown={() => handlePunch('LEFT')}>👊 LEFT</button>
