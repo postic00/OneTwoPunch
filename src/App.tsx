@@ -129,9 +129,9 @@ export default function App() {
     blockRef.current = newBlock
     setTimeLeft(tl)
     startTimeRef.current = performance.now()
+    setTimeout(() => setFlash(null), 350)
 
-    timerRef.current = setTimeout(() => { return // TODO: 디자인 작업 후 제거
-    // eslint-disable-next-line no-unreachable
+    timerRef.current = setTimeout(() => {
       if (vibrationRef.current) navigator.vibrate?.([80, 30, 80])
       setCombo(0)
       setFlash('MISS')
@@ -214,7 +214,7 @@ export default function App() {
 
   useEffect(() => () => clearTimers(), [clearTimers])
 
-  const timerPct = 1 - timeLeft / timeLimit
+  const timerPct = timeLeft / timeLimit
 
   const livesBlock = (
     <div className="lives-row">
@@ -276,31 +276,35 @@ export default function App() {
   return (
     <div className="game">
       <div className="hp-bar">
-        <span className="hp-text">{lives}/{MAX_LIVES}</span>
-        <div className="score-info">점수: {score}</div>
+        <div className="score-info">타격: {score}</div>
       </div>
 
       <div key={hitEffectKey} className={`opponent ${flash === 'MISS' ? 'miss' : ''}`}>
-        {combo >= 2 && <div className="combo">{combo} COMBO!</div>}
-        <div className="hit-effect-wrap">
+        <div className="combo-wrap">
           {flash === 'HIT' && <span key={hitEffectKey} className="hit-effect">💥</span>}
+          {combo >= 2 && <div className="combo">{combo} COMBO!</div>}
         </div>
         <div className="boxer-row">
-          <span className={`glove left ${gameState === 'PLAYING' && blockSide === 'LEFT' ? 'blocking' : ''}`}>🥊</span>
-          <span className="boxer-body">🧍</span>
-          <span className={`glove right ${gameState === 'PLAYING' && blockSide === 'RIGHT' ? 'blocking' : ''}`}>🥊</span>
+          <img src="/asset/2_glove.png" className={`glove left ${gameState === 'PLAYING' && blockSide === 'LEFT' ? 'blocking' : ''}`} />
+          <img src="/asset/10_char.png" className="boxer-body" />
+          <img src="/asset/2_glove_r.png" className={`glove right ${gameState === 'PLAYING' && blockSide === 'RIGHT' ? 'blocking' : ''}`} />
         </div>
       </div>
 
-      <progress
-        className={`timer-progress ${timerPct > 0.7 ? 'danger' : ''}`}
-        value={timerPct}
-        max={1}
-      />
+      <div className={`timer-bar-wrap ${blockSide === 'LEFT' ? 'right' : 'left'} ${flash === 'HIT' ? 'hidden' : ''}`}>
+        <div
+          className={`timer-bar-fill ${timerPct < 0.3 ? 'danger' : ''}`}
+          style={{ height: `${timerPct * 100}%` }}
+        />
+      </div>
 
       <div className="controls">
-        <button className="punch-btn" onPointerDown={() => handlePunch('LEFT')}>👊 LEFT</button>
-        <button className="punch-btn" onPointerDown={() => handlePunch('RIGHT')}>RIGHT 👊</button>
+        <button className="punch-btn left-btn" onPointerDown={() => handlePunch('LEFT')}>
+          <img src="/asset/2_glove.png" className="btn-glove" />
+        </button>
+        <button className="punch-btn right-btn" onPointerDown={() => handlePunch('RIGHT')}>
+          <img src="/asset/2_glove_r.png" className="btn-glove" />
+        </button>
       </div>
 
       {gameState === 'GAMEOVER' && (
