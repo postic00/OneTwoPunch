@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">원투펀치</string>
+    <string name="title_activity_main">원투펀치</string>
+    <string name="package_name">com.postic.onetwopunch</string>
+    <string name="custom_url_scheme">com.postic.onetwopunch</string>
+</resources>
