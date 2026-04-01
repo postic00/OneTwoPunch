@@ -5,6 +5,7 @@ rm -f public/app-debug.apk
 npm run build
 npx cap sync android
 
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 cd android
 ./gradlew assembleDebug
 cd ..
