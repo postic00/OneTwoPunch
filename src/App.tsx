@@ -253,23 +253,25 @@ export default function App() {
     startTimeRef.current = performance.now()
     flashResetRef.current = setTimeout(() => setFlash(null), 350)
 
-    // timerRef.current = setTimeout(() => {
-    //   if (vibrationRef.current) navigator.vibrate?.([80, 30, 80])
-    //   setCombo(0)
-    //   setFlash('MISS')
-    //   const newLives = livesRef.current - 1
-    //   setLives(newLives)
-    //   livesRef.current = newLives
-    //   saveBest(scoreRef.current)
-    //   setGameState('GAMEOVER')
-    // }, tl)
+    timerRef.current = setTimeout(() => {
+      if (vibrationRef.current) navigator.vibrate?.([80, 30, 80])
+      setCombo(0)
+      setFlash('MISS')
+      setTauntMsg(randomTaunt(false))
+      const newLives = Math.max(0, livesRef.current - 1)
+      setLives(newLives)
+      livesRef.current = newLives
+      saveBest(scoreRef.current)
+      if (soundRef.current) playGameOver()
+      setGameState('GAMEOVER')
+    }, tl)
 
-    // const tick = () => {
-    //   const elapsed = performance.now() - startTimeRef.current
-    //   setTimeLeft(Math.max(0, tl - elapsed))
-    //   rafRef.current = requestAnimationFrame(tick)
-    // }
-    // rafRef.current = requestAnimationFrame(tick)
+    const tick = () => {
+      const elapsed = performance.now() - startTimeRef.current
+      setTimeLeft(Math.max(0, tl - elapsed))
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
   }, [saveBest])
 
   const handlePunch = useCallback((side: Side) => {
@@ -366,7 +368,7 @@ export default function App() {
             <span key={i} className={`hp-heart ${i < lives ? 'active' : 'empty'}`}>🥊</span>
           ))}
         </div>
-        <span className="hp-text">{lives}/{lives > MAX_LIVES ? AD_MAX_LIVES : MAX_LIVES}</span>
+        <span className="hp-text">{lives}/{MAX_LIVES}</span>
       </div>
       <button className="charge-btn" onClick={handleAdCharge}>
         <span>📺 충전</span>
@@ -431,7 +433,7 @@ export default function App() {
         </div>
         <div className="boxer-row">
           <img src="/asset/2_glove.png" className={`glove left ${gameState === 'PLAYING' && blockSide === 'LEFT' ? 'blocking' : ''}`} />
-          <img src={`/asset/10_char.png`} className="boxer-body" />
+          <img src={`/asset/${getStage(score) + 9}_char.png`} className="boxer-body" />
           <img src="/asset/2_glove_r.png" className={`glove right ${gameState === 'PLAYING' && blockSide === 'RIGHT' ? 'blocking' : ''}`} />
           {isOverHalfStage(score) && (
             <svg className="sweat-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
