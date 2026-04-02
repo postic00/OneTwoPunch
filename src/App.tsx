@@ -1,6 +1,16 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import './App.css'
-import { initAdMob, showRewardedAd } from './utils/admob'
+import { Capacitor } from '@capacitor/core'
+import { initAdMob } from './utils/admob'
+import { isTossEnvironment } from './utils/tossAd'
+import AdModal from './components/AdModal'
+
+function isAndroid() { return Capacitor.getPlatform() === 'android' }
+
+if (typeof window !== 'undefined' && (isTossEnvironment() || isAndroid())) {
+  document.documentElement.style.setProperty('--safe-area-inset-top', '0px')
+  document.documentElement.style.setProperty('--safe-area-inset-bottom', '0px')
+}
 
 type Side = 'LEFT' | 'RIGHT'
 type GameState = 'IDLE' | 'SETTINGS' | 'PLAYING' | 'GAMEOVER'
@@ -124,10 +134,6 @@ function playClick() {
   osc.start(); osc.stop(ac.currentTime + 0.05)
 }
 
-async function showAd(onRewarded: () => void) {
-  const rewarded = await showRewardedAd()
-  if (rewarded) onRewarded()
-}
 
 export default function App() {
   const [gameState, setGameState] = useState<GameState>('IDLE')
@@ -152,6 +158,7 @@ export default function App() {
   })
   const [chargeCountdown, setChargeCountdown] = useState(0)
   const [usedContinue, setUsedContinue] = useState(false)
+  const [adModal, setAdModal] = useState<'continue' | 'charge' | null>(null)
   const [isNewBest, setIsNewBest] = useState(false)
   const [tauntMsg, setTauntMsg] = useState('')
   const [recordMsg, setRecordMsg] = useState('')
@@ -337,22 +344,11 @@ export default function App() {
   }, [clearTimers, nextRound])
 
   const continueGame = useCallback(() => {
-    showAd(() => {
-      setUsedContinue(true)
-      clearTimers()
-      setFlash(null)
-      setGameState('PLAYING')
-      setTimeout(() => nextRound(timeLimitRef.current), 100)
-    })
+    setAdModal('continue')
   }, [clearTimers, nextRound])
 
   const handleAdCharge = useCallback(() => {
-    showAd(() => {
-      if (livesRef.current >= AD_MAX_LIVES) return
-      const next = livesRef.current + 1
-      setLives(next)
-      livesRef.current = next
-    })
+    setAdModal('charge')
   }, [])
 
   useEffect(() => () => clearTimers(), [clearTimers])
@@ -383,7 +379,7 @@ export default function App() {
 
   if (gameState === 'SETTINGS') {
     return (
-      <div className="home">
+      <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
         <div className="home-bottom">
           <div className="settings-list">
             <div className="settings-row">
@@ -409,7 +405,7 @@ export default function App() {
 
   if (gameState === 'IDLE') {
     return (
-      <div className="home">
+      <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
         <div className="best-score">⚡ 최고 점수: {bestScore} ⚡</div>
         <div className="home-bottom">
           {livesBlock}
@@ -421,7 +417,8 @@ export default function App() {
   }
 
   return (
-    <div className="game">
+    <>
+    <div className="game" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
       <div className="hp-bar">
         <div className="score-info">타격: {score}</div>
       </div>
@@ -480,5 +477,31 @@ export default function App() {
         </div>
       )}
     </div>
+    {adModal === 'continue' && (
+      <AdModal
+        onComplete={() => {
+          setAdModal(null)
+          setUsedContinue(true)
+          clearTimers()
+          setFlash(null)
+          setGameState('PLAYING')
+          setTimeout(() => nextRound(timeLimitRef.current), 100)
+        }}
+        onClose={() => setAdModal(null)}
+      />
+    )}
+    {adModal === 'charge' && (
+      <AdModal
+        onComplete={() => {
+          setAdModal(null)
+          if (livesRef.current >= AD_MAX_LIVES) return
+          const next = livesRef.current + 1
+          setLives(next)
+          livesRef.current = next
+        }}
+        onClose={() => setAdModal(null)}
+      />
+    )}
+    </>
   )
 }

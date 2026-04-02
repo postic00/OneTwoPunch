@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apps-in-toss/web-bridge": "^2.4.1",
     "@apps-in-toss/web-framework": "^2.4.1",
     "@capacitor-community/admob": "^8.0.0",
     "@capacitor/android": "^8.3.0",

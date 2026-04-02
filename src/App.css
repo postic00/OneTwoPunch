@@ -438,6 +438,69 @@ button { font-weight: bold; }
   100% { transform: scale(1.0); opacity: 0; }
 }
 
+/* 광고 모달 */
+.ad-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.ad-modal {
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 32px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 280px;
+}
+.ad-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.ad-icon { font-size: 48px; }
+.ad-text { font-size: 16px; font-weight: 700; color: #a0aec0; text-align: center; }
+.ad-count { font-size: 48px; font-weight: 900; color: #fff; line-height: 1; }
+.ad-confirm-btn {
+  width: 100%;
+  background: #3b82f6;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ad-skip-btn {
+  background: none;
+  border: 1px solid #4a5568;
+  border-radius: 10px;
+  padding: 8px 24px;
+  color: #718096;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ad-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(255,255,255,0.15);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: adSpin 0.8s linear infinite;
+}
+@keyframes adSpin {
+  to { transform: rotate(360deg); }
+}
+
 /* 콤보 */
 .combo {
   font-size: 42px;
