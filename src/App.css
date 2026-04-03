@@ -69,7 +69,7 @@ button { font-weight: bold; }
 
 .boxer-body {
   height: 350px;
-  width: auto;
+  width: 240px;
   -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   transition: none;
@@ -310,6 +310,40 @@ button { font-weight: bold; }
   text-shadow: 0 0 8px #ff2200, 0 2px 6px rgba(0,0,0,0.9);
 }
 
+.start-btn-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.start-btn-row .start-btn,
+.start-btn-row .infinite-btn {
+  width: 130px;
+  flex: none;
+  font-size: 16px;
+  letter-spacing: 0;
+  padding: 0;
+}
+.infinite-btn {
+  flex: none;
+  height: 50px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 900;
+  border: none;
+  border-radius: 60px;
+  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #5b21b6 100%);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(124,58,237,0.7), 0 5px 0 #3b0764, inset 0 1px 0 rgba(255,255,255,0.25);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.infinite-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 14px rgba(124,58,237,0.5), 0 2px 0 #3b0764;
+}
 .start-btn {
   width: 240px;
   height: 50px;
@@ -504,6 +538,149 @@ button { font-weight: bold; }
   0%   { transform: scale(0.5); opacity: 1; }
   60%  { transform: scale(1.4); opacity: 1; }
   100% { transform: scale(1.0); opacity: 0; }
+}
+
+/* 무한모드 설정 팝업 */
+.infinite-setup-box {
+  background: linear-gradient(160deg, #1a0a2e 0%, #2d1254 100%);
+  border: 2px solid #7c3aed;
+  border-radius: 20px;
+  padding: 36px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 280px;
+  box-shadow: 0 0 40px rgba(124,58,237,0.5);
+}
+.infinite-setup-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #c4b5fd;
+  letter-spacing: 2px;
+  margin: 0;
+}
+.infinite-setup-desc {
+  font-size: 16px;
+  color: #e9d5ff;
+  margin: 0;
+  text-align: center;
+  line-height: 1.6;
+}
+.infinite-photo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  border-radius: 60px;
+  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #5b21b6 100%);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(124,58,237,0.6), 0 4px 0 #3b0764;
+  letter-spacing: 1px;
+}
+.infinite-photo-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 10px rgba(124,58,237,0.4), 0 2px 0 #3b0764;
+}
+.infinite-error-msg {
+  font-size: 14px;
+  color: #fca5a5;
+  text-align: center;
+  white-space: pre-line;
+  line-height: 1.6;
+  margin: 0;
+}
+.infinite-loading-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.infinite-loading-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.infinite-loading-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a78bfa, #7c3aed);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.infinite-loading-text {
+  font-size: 13px;
+  color: #c4b5fd;
+}
+.infinite-setup-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 4px 12px;
+}
+
+/* 무한모드 프리뷰 */
+.infinite-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.infinite-preview-char {
+  width: 140px;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid #7c3aed;
+}
+.infinite-preview-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e9d5ff;
+  margin: 0;
+}
+.infinite-preview-stars {
+  font-size: 24px;
+  color: #fbbf24;
+  letter-spacing: 2px;
+}
+.infinite-preview-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.infinite-retry-btn {
+  background: none;
+  border: 1px solid #7c3aed;
+  color: #c4b5fd;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.infinite-start-btn {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #4c1d95;
+  letter-spacing: 1px;
+}
+.infinite-start-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #4c1d95;
 }
 
 /* 튜토리얼 */

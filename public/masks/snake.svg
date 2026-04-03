@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <mask id="h">
+      <rect width="512" height="512" fill="white"/>
+      <ellipse cx="170" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="342" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="256" cy="335" rx="46" ry="34" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#h)">
+
+    <!-- 얼굴 (갸름한 타원) -->
+    <ellipse cx="256" cy="285" rx="145" ry="200" fill="#7fb87f"/>
+    <!-- 비늘 패턴 -->
+    <ellipse cx="256" cy="190" rx="50" ry="30" fill="#6aaa6a" opacity="0.6"/>
+    <ellipse cx="256" cy="250" rx="60" ry="30" fill="#6aaa6a" opacity="0.5"/>
+    <ellipse cx="195" cy="230" rx="35" ry="22" fill="#6aaa6a" opacity="0.4"/>
+    <ellipse cx="317" cy="230" rx="35" ry="22" fill="#6aaa6a" opacity="0.4"/>
+    <!-- 갈라진 혀 -->
+    <path d="M245,430 Q256,410 267,430" stroke="#cc2222" stroke-width="5" fill="none"/>
+    <path d="M256,395 L256,430" stroke="#cc2222" stroke-width="6"/>
+    <!-- 머리 무늬 -->
+    <path d="M200,120 Q256,100 312,120" stroke="#4a8a4a" stroke-width="8" fill="none"/>
+  
+  </g>
+</svg>

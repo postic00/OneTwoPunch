@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <mask id="h">
+      <rect width="512" height="512" fill="white"/>
+      <ellipse cx="170" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="342" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="256" cy="335" rx="46" ry="34" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#h)">
+
+    <!-- 귀 -->
+    <ellipse cx="165" cy="105" rx="58" ry="68" fill="#f4a0b0"/>
+    <ellipse cx="347" cy="105" rx="58" ry="68" fill="#f4a0b0"/>
+    <ellipse cx="165" cy="105" rx="38" ry="48" fill="#f4c0cc"/>
+    <ellipse cx="347" cy="105" rx="38" ry="48" fill="#f4c0cc"/>
+    <!-- 얼굴 -->
+    <ellipse cx="256" cy="285" rx="168" ry="195" fill="#f4b8c0"/>
+    <!-- 주둥이 -->
+    <ellipse cx="256" cy="365" rx="75" ry="58" fill="#f09090"/>
+    <ellipse cx="230" cy="368" rx="18" ry="14" fill="#d06060"/>
+    <ellipse cx="282" cy="368" rx="18" ry="14" fill="#d06060"/>
+    <!-- 볼 -->
+    <ellipse cx="158" cy="310" rx="42" ry="32" fill="#f4a0b0" opacity="0.7"/>
+    <ellipse cx="354" cy="310" rx="42" ry="32" fill="#f4a0b0" opacity="0.7"/>
+  
+  </g>
+</svg>

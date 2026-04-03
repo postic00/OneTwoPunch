@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <mask id="h">
+      <rect width="512" height="512" fill="white"/>
+      <ellipse cx="170" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="342" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="256" cy="335" rx="46" ry="34" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#h)">
+
+    <!-- 귀 -->
+    <polygon points="140,50 100,130 190,130" fill="#E8730A"/>
+    <polygon points="372,50 412,130 322,130" fill="#E8730A"/>
+    <polygon points="148,65 118,125 182,125" fill="#fff"/>
+    <polygon points="364,65 394,125 330,125" fill="#fff"/>
+    <!-- 얼굴 -->
+    <ellipse cx="256" cy="290" rx="170" ry="195" fill="#E8730A"/>
+    <!-- 줄무늬 -->
+    <path d="M120,180 Q180,160 200,200" stroke="#333" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M110,220 Q175,205 195,240" stroke="#333" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M392,180 Q332,160 312,200" stroke="#333" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M402,220 Q337,205 317,240" stroke="#333" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <!-- 이마 줄무늬 -->
+    <path d="M220,95 Q256,80 292,95" stroke="#333" stroke-width="10" fill="none"/>
+    <!-- 흰 뺨 -->
+    <ellipse cx="256" cy="340" rx="90" ry="70" fill="#fff8f0"/>
+    <!-- 수염 -->
+    <line x1="110" y1="335" x2="185" y2="320" stroke="#888" stroke-width="3"/>
+    <line x1="110" y1="355" x2="185" y2="348" stroke="#888" stroke-width="3"/>
+    <line x1="402" y1="335" x2="327" y2="320" stroke="#888" stroke-width="3"/>
+    <line x1="402" y1="355" x2="327" y2="348" stroke="#888" stroke-width="3"/>
+  
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <mask id="h">
+      <rect width="512" height="512" fill="white"/>
+      <ellipse cx="170" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="342" cy="210" rx="52" ry="36" fill="black"/>
+      <ellipse cx="256" cy="335" rx="46" ry="34" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#h)">
+
+    <!-- 귀 (길고 높게) -->
+    <ellipse cx="185" cy="30" rx="38" ry="110" fill="#e8e8e8"/>
+    <ellipse cx="327" cy="30" rx="38" ry="110" fill="#e8e8e8"/>
+    <ellipse cx="185" cy="30" rx="22" ry="90" fill="#f4b8c8"/>
+    <ellipse cx="327" cy="30" rx="22" ry="90" fill="#f4b8c8"/>
+    <!-- 얼굴 -->
+    <ellipse cx="256" cy="295" rx="160" ry="190" fill="#f0f0f0"/>
+    <!-- 볼 -->
+    <ellipse cx="165" cy="320" rx="40" ry="30" fill="#f4b8c8" opacity="0.6"/>
+    <ellipse cx="347" cy="320" rx="40" ry="30" fill="#f4b8c8" opacity="0.6"/>
+    <!-- 수염 -->
+    <line x1="115" y1="335" x2="190" y2="325" stroke="#aaa" stroke-width="2"/>
+    <line x1="115" y1="350" x2="190" y2="348" stroke="#aaa" stroke-width="2"/>
+    <line x1="397" y1="335" x2="322" y2="325" stroke="#aaa" stroke-width="2"/>
+    <line x1="397" y1="350" x2="322" y2="348" stroke="#aaa" stroke-width="2"/>
+  
+  </g>
+</svg>
