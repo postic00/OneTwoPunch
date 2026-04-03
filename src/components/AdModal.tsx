@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { showRewardedAd } from '../utils/admob'
-import { isTossEnvironment, isTossAdReady } from '../utils/tossAd'
+import { isTossEnvironment, isTossAdReady, TEST_MODE } from '../utils/tossAd'
 
 interface Props {
   onComplete: () => void
@@ -19,7 +19,7 @@ export default function AdModal({ onComplete, onClose }: Props) {
   useEffect(() => { onCompleteRef.current = onComplete }, [onComplete])
   useEffect(() => { onCloseRef.current = onClose }, [onClose])
 
-  const [tossNotReady] = useState(() => isTossEnvironment() && !isTossAdReady())
+  const [tossNotReady] = useState(() => !TEST_MODE && isTossEnvironment() && !isTossAdReady())
 
   useEffect(() => {
     if (isNative) {

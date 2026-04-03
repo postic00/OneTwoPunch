@@ -17,9 +17,9 @@ type GameState = 'IDLE' | 'SETTINGS' | 'PLAYING' | 'GAMEOVER'
 
 const MAX_LIVES = 5
 const AD_MAX_LIVES = 20
-const INITIAL_TIME = 300000
+const INITIAL_TIME = 3000
 const MIN_TIME = 300
-const MIN_DECREASE = 1
+const MIN_DECREASE = 2
 const CHARGE_INTERVAL_MS = 10 * 60 * 1000 // 10분
 
 // 스테이지 누적 타격 임계값 (10개 스테이지)
@@ -51,11 +51,18 @@ function getStage(score: number): number {
   return 1
 }
 
-function isOverHalfStage(score: number): boolean {
+function isOverThirdStage(score: number): boolean {
   const stage = getStage(score)
   const stageStart = STAGE_THRESHOLDS[stage - 1]
   const stageLength = 40 + (stage - 1) * 10
-  return score >= stageStart + stageLength / 2
+  return score >= stageStart + stageLength / 3
+}
+
+function isOverTwoThirdsStage(score: number): boolean {
+  const stage = getStage(score)
+  const stageStart = STAGE_THRESHOLDS[stage - 1]
+  const stageLength = 40 + (stage - 1) * 10
+  return score >= stageStart + (stageLength * 2) / 3
 }
 
 // Web Audio
@@ -88,17 +95,6 @@ function playHit() {
   ng.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.08)
   noise.connect(filter); filter.connect(ng); ng.connect(ac.destination)
   noise.start()
-}
-function playMiss() {
-  const ac = getAC()
-  const osc = ac.createOscillator(); const g = ac.createGain()
-  osc.connect(g); g.connect(ac.destination)
-  osc.type = 'sawtooth'
-  osc.frequency.setValueAtTime(300, ac.currentTime)
-  osc.frequency.exponentialRampToValueAtTime(80, ac.currentTime + 0.3)
-  g.gain.setValueAtTime(0.35, ac.currentTime)
-  g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.3)
-  osc.start(); osc.stop(ac.currentTime + 0.3)
 }
 function playCombo(combo: number) {
   const ac = getAC()
@@ -152,7 +148,6 @@ export default function App() {
   const [maxCombo, setMaxCombo] = useState(0)
   const [hitEffectKey, setHitEffectKey] = useState(0)
   const [soundOn, setSoundOn] = useState(() => localStorage.getItem('boxing_sound') !== 'off')
-  const [vibrationOn, setVibrationOn] = useState(() => localStorage.getItem('boxing_vibration') !== 'off')
   const [nextChargeTime, setNextChargeTime] = useState<number>(() => {
     const s = localStorage.getItem('boxing_next_charge')
     return s ? Number(s) : 0
@@ -160,14 +155,16 @@ export default function App() {
   const [chargeCountdown, setChargeCountdown] = useState(0)
   const [usedContinue, setUsedContinue] = useState(false)
   const [adModal, setAdModal] = useState<'continue' | 'charge' | null>(null)
+  const [charStage, setCharStage] = useState(1)
+  const [charAnim, setCharAnim] = useState<'idle' | 'exit-left' | 'exit-right' | 'exit-down' | 'enter-left' | 'enter-right' | 'enter-top'>('idle')
+  const charTransitioning = useRef(false)
+  const [showTutorial, setShowTutorial] = useState(() => !localStorage.getItem('boxing_tutorial_done'))
   const [isNewBest, setIsNewBest] = useState(false)
   const [tauntMsg, setTauntMsg] = useState('')
   const [recordMsg, setRecordMsg] = useState('')
 
   const soundRef = useRef(soundOn)
-  const vibrationRef = useRef(vibrationOn)
   soundRef.current = soundOn
-  vibrationRef.current = vibrationOn
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const flashResetRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -181,6 +178,7 @@ export default function App() {
   const scoreRef = useRef(0)
   const nextChargeTimeRef = useRef(nextChargeTime)
   const timeDecreaseRef = useRef(30)
+  const decreaseCountRef = useRef(0)
   stateRef.current = gameState
   blockRef.current = blockSide
   livesRef.current = lives
@@ -236,12 +234,15 @@ export default function App() {
     return () => clearInterval(tick)
   }, [])
 
+  const RECORD_MSGS = [
+    '🏆 신기록 달성!', '🎉 최고기록 경신!', '🔥 대단해요!', '⚡ 새 기록!', '👊 최강!',
+  ]
+
   const saveBest = useCallback((s: number) => {
     const prevBest = Number(localStorage.getItem('boxing_best') ?? 0)
     if (s > prevBest) {
       setIsNewBest(true)
-      const all = [...TAUNT_MISS, ...TAUNT_TIMEOUT]
-      setRecordMsg(all[Math.floor(Math.random() * all.length)])
+      setRecordMsg(RECORD_MSGS[Math.floor(Math.random() * RECORD_MSGS.length)])
       setBestScore(s)
       localStorage.setItem('boxing_best', String(s))
     }
@@ -262,7 +263,6 @@ export default function App() {
     flashResetRef.current = setTimeout(() => setFlash(null), 350)
 
     timerRef.current = setTimeout(() => {
-      if (vibrationRef.current) navigator.vibrate?.([80, 30, 80])
       setCombo(0)
       setFlash('MISS')
       setTauntMsg(randomTaunt(false))
@@ -311,13 +311,15 @@ export default function App() {
           return next
         })
       }
-      if (vibrationRef.current) navigator.vibrate?.(30)
       const newScore = scoreRef.current + 1
       setScore(newScore)
       scoreRef.current = newScore
-      const stage = getStage(newScore)
-      const decrease = Math.max(MIN_DECREASE, 25 + stage * 5)
-      timeDecreaseRef.current = decrease
+      const decrease = timeDecreaseRef.current
+      decreaseCountRef.current += 1
+      if (decreaseCountRef.current >= 4) {
+        decreaseCountRef.current = 0
+        timeDecreaseRef.current = Math.max(MIN_DECREASE, decrease - 1)
+      }
       const newTl = Math.max(MIN_TIME, timeLimitRef.current - decrease)
       setTimeLimit(newTl)
       timeLimitRef.current = newTl
@@ -326,8 +328,6 @@ export default function App() {
       setFlash('MISS')
       setCombo(0)
       setTauntMsg(randomTaunt(true))
-      if (soundRef.current) playMiss()
-      if (vibrationRef.current) navigator.vibrate?.([80, 30, 80])
       const newLives = Math.max(0, livesRef.current - 1)
       setLives(newLives)
       livesRef.current = newLives
@@ -349,6 +349,7 @@ export default function App() {
     setGameState('PLAYING')
     timeLimitRef.current = INITIAL_TIME
     timeDecreaseRef.current = 30
+    decreaseCountRef.current = 0
     scoreRef.current = 0
     setTimeout(() => nextRound(INITIAL_TIME), 100)
   }, [clearTimers, nextRound])
@@ -361,8 +362,95 @@ export default function App() {
     setAdModal('charge')
   }, [])
 
-  useEffect(() => () => clearTimers(), [clearTimers])
+  useEffect(() => () => { clearTimers(); _ac?.close(); _ac = null }, [clearTimers])
   useEffect(() => { initAdMob() }, [])
+
+  // 스테이지 변경 시 캐릭터 전환 씬
+  useEffect(() => {
+    const newStage = getStage(score)
+    if (newStage === charStage || charTransitioning.current) return
+    charTransitioning.current = true
+    const exits: Array<'exit-left' | 'exit-right' | 'exit-down'> = ['exit-left', 'exit-right', 'exit-down']
+    const exitDir = exits[Math.floor(Math.random() * exits.length)]
+    const enterOptions: Record<string, Array<'enter-left' | 'enter-right' | 'enter-top'>> = {
+      'exit-left':  ['enter-right', 'enter-top'],
+      'exit-right': ['enter-left',  'enter-top'],
+      'exit-down':  ['enter-left',  'enter-right'],
+    }
+    const enterDir = enterOptions[exitDir][Math.floor(Math.random() * 2)]
+    setCharAnim(exitDir)
+    setTimeout(() => {
+      setCharStage(newStage)
+      setCharAnim(enterDir)
+      setTimeout(() => {
+        setCharAnim('idle')
+        charTransitioning.current = false
+      }, 350)
+    }, 350)
+  }, [score, charStage])
+
+  // 백그라운드 진입 시 타이머 일시정지
+  useEffect(() => {
+    const pauseTimeRef = { current: 0 }
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (stateRef.current === 'PLAYING') {
+          pauseTimeRef.current = performance.now()
+          if (timerRef.current) clearTimeout(timerRef.current)
+          if (rafRef.current) cancelAnimationFrame(rafRef.current)
+        }
+      } else {
+        if (stateRef.current === 'PLAYING' && pauseTimeRef.current > 0) {
+          const pausedDuration = performance.now() - pauseTimeRef.current
+          startTimeRef.current += pausedDuration
+          const tl = timeLimitRef.current
+          const elapsed = performance.now() - startTimeRef.current
+          const remaining = tl - elapsed
+          pauseTimeRef.current = 0
+          if (remaining <= 0) {
+            setCombo(0)
+            setFlash('MISS')
+            setTauntMsg(randomTaunt(false))
+            const newLives = Math.max(0, livesRef.current - 1)
+            setLives(newLives)
+            livesRef.current = newLives
+            saveBest(scoreRef.current)
+            if (soundRef.current) playGameOver()
+            setGameState('GAMEOVER')
+          } else {
+            timerRef.current = setTimeout(() => {
+              setCombo(0)
+              setFlash('MISS')
+              setTauntMsg(randomTaunt(false))
+              const newLives = Math.max(0, livesRef.current - 1)
+              setLives(newLives)
+              livesRef.current = newLives
+              saveBest(scoreRef.current)
+              if (soundRef.current) playGameOver()
+              setGameState('GAMEOVER')
+            }, remaining)
+            timerDangerRef.current = false
+            const tick = () => {
+              const el = performance.now() - startTimeRef.current
+              const pct = Math.max(0, (tl - el) / tl)
+              if (timerBarRef.current) {
+                timerBarRef.current.style.height = `${pct * 100}%`
+                const isDanger = pct < 0.3
+                if (isDanger !== timerDangerRef.current) {
+                  timerDangerRef.current = isDanger
+                  timerBarRef.current.classList.toggle('danger', isDanger)
+                }
+              }
+              rafRef.current = requestAnimationFrame(tick)
+            }
+            rafRef.current = requestAnimationFrame(tick)
+          }
+        }
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [saveBest])
 
 
   const livesBlock = (
@@ -398,13 +486,6 @@ export default function App() {
                 onClick={() => setSoundOn(v => { const next = !v; localStorage.setItem('boxing_sound', next ? 'on' : 'off'); if (next) playClick(); return next })}
               >{soundOn ? 'ON' : 'OFF'}</button>
             </div>
-            <div className="settings-row">
-              <span>📳 진동</span>
-              <button
-                className={`toggle ${vibrationOn ? 'on' : 'off'}`}
-                onClick={() => setVibrationOn(v => { const next = !v; localStorage.setItem('boxing_vibration', next ? 'on' : 'off'); if (next) navigator.vibrate?.(100); return next })}
-              >{vibrationOn ? 'ON' : 'OFF'}</button>
-            </div>
           </div>
           <button className="start-btn" onClick={() => setGameState('IDLE')}>돌아가기</button>
         </div>
@@ -417,10 +498,16 @@ export default function App() {
       <>
         <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
           <div className="best-score">⚡ 최고 점수: {bestScore} ⚡</div>
+          {lives === 0 && (
+            <p className="no-lives-msg">목숨이 없어요! 충전 버튼을 눌러주세요</p>
+          )}
           <div className="home-bottom">
             {livesBlock}
             <button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>시작하기</button>
-            <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
+            <div className="home-btn-row">
+              <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
+              <button className="settings-btn" onClick={() => setShowTutorial(true)}>? 도움말</button>
+            </div>
           </div>
         </div>
         {adModal === 'charge' && (
@@ -435,6 +522,39 @@ export default function App() {
             onClose={() => setAdModal(null)}
           />
         )}
+        {showTutorial && (
+          <div className="tutorial-overlay">
+            <div className="tutorial-box">
+              <div className="tutorial-section">
+                <p className="tutorial-section-title">게임 규칙</p>
+                <div className="tutorial-steps">
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">1</span>
+                    <span>상대가 한쪽 글러브로 막습니다</span>
+                  </div>
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">2</span>
+                    <span>막지 않은 반대쪽을 빠르게 쳐요!</span>
+                  </div>
+                </div>
+              </div>
+              <div className="tutorial-section">
+                <p className="tutorial-section-title">게임 오버</p>
+                <div className="tutorial-steps">
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">!</span>
+                    <span>막은 쪽을 치면 게임이 끝나요</span>
+                  </div>
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">!</span>
+                    <span>시간 초과시 게임이 끝나요</span>
+                  </div>
+                </div>
+              </div>
+              <button className="tutorial-start-btn" onClick={() => { localStorage.setItem('boxing_tutorial_done', '1'); setShowTutorial(false) }}>확인</button>
+            </div>
+          </div>
+        )}
       </>
     )
   }
@@ -443,7 +563,12 @@ export default function App() {
     <>
     <div className="game" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
       <div className="hp-bar">
-        <div className="score-info">타격: {score}</div>
+        <div className="score-info" style={{ cursor: 'pointer' }} onPointerDown={() => {
+          const stage = getStage(scoreRef.current)
+          const next = STAGE_THRESHOLDS[Math.min(stage, STAGE_THRESHOLDS.length - 1)]
+          setScore(next)
+          scoreRef.current = next
+        }}>타격: {score}</div>
       </div>
 
       <div key={hitEffectKey} className={`opponent ${flash === 'MISS' ? 'miss' : ''}`}>
@@ -453,15 +578,24 @@ export default function App() {
         </div>
         <div className="boxer-row">
           <img src="/asset/2_glove.png" className={`glove left ${gameState === 'PLAYING' && blockSide === 'LEFT' ? 'blocking' : ''}`} />
-          <img src={`/asset/${getStage(score) + 9}_char.png`} className="boxer-body" />
+          <img src={`/asset/${charStage + 9}_char.png`} className={`boxer-body char-${charAnim}`} />
           <img src="/asset/2_glove_r.png" className={`glove right ${gameState === 'PLAYING' && blockSide === 'RIGHT' ? 'blocking' : ''}`} />
-          {isOverHalfStage(score) && (
+          {isOverThirdStage(score) && (
             <svg className="sweat-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
               <ellipse className="sweat-drop d1" cx="50" cy="10" rx="3.5" ry="5.5" fill="#7ec8e3" opacity="0.9"/>
               <ellipse className="sweat-drop d2" cx="50" cy="10" rx="3" ry="5" fill="#7ec8e3" opacity="0.9"/>
               <ellipse className="sweat-drop d3" cx="50" cy="10" rx="3.5" ry="5.5" fill="#7ec8e3" opacity="0.9"/>
               <ellipse className="sweat-drop d4" cx="50" cy="10" rx="3" ry="5" fill="#7ec8e3" opacity="0.9"/>
             </svg>
+          )}
+          {isOverTwoThirdsStage(score) && (
+            <div className="stars-orbit">
+              {[0,1,2].map(i => (
+                <div key={i} className="star-arm" style={{ '--i': i } as React.CSSProperties}>
+                  <span className="star-dot">⭐</span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

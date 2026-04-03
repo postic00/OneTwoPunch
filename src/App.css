@@ -68,11 +68,25 @@ button { font-weight: bold; }
 }
 
 .boxer-body {
-  height: 300px;
+  height: 350px;
   width: auto;
   -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  transition: none;
 }
+.char-exit-left  { animation: charExitLeft  0.35s ease-in forwards; }
+.char-exit-right { animation: charExitRight 0.35s ease-in forwards; }
+.char-exit-down  { animation: charExitDown  0.35s ease-in forwards; }
+.char-enter-left { animation: charEnterLeft  0.35s ease-out forwards; }
+.char-enter-right{ animation: charEnterRight 0.35s ease-out forwards; }
+.char-enter-top  { animation: charEnterTop   0.35s ease-out forwards; }
+
+@keyframes charExitLeft  { to { transform: translateX(-140%) opacity(0); opacity: 0; } }
+@keyframes charExitRight { to { transform: translateX(140%);  opacity: 0; } }
+@keyframes charExitDown  { to { transform: translateY(140%);  opacity: 0; } }
+@keyframes charEnterLeft { from { transform: translateX(-140%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes charEnterRight{ from { transform: translateX(140%);  opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes charEnterTop  { from { transform: translateY(-140%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
 .glove {
   height: 150px;
@@ -82,19 +96,19 @@ button { font-weight: bold; }
   position: absolute;
   z-index: 2;
 }
-.glove.left  { left: -40px; top: 95%; transform: translateY(-50%) rotate(-15deg); }
-.glove.right { right: -40px; top: 95%; transform: translateY(-50%) rotate(15deg); }
+.glove.left  { left: -20px; top: calc(95% - 35px); transform: translateY(-50%) rotate(-30deg); }
+.glove.right { right: -20px; top: calc(95% - 35px); transform: translateY(-50%) rotate(30deg); }
 .glove.left.blocking {
   opacity: 1;
   top: 45%;
-  left: -70px;
-  transform: translateY(-50%);
+  left: -60px;
+  transform: translateY(-50%) rotate(-15deg);
 }
 .glove.right.blocking {
   opacity: 1;
   top: 45%;
-  right: -70px;
-  transform: translateY(-50%);
+  right: -60px;
+  transform: translateY(-50%) rotate(15deg);
 }
 
 /* 타이머 */
@@ -173,7 +187,7 @@ button { font-weight: bold; }
   box-shadow: 0 2px 0 #000, 0 3px 8px rgba(0,0,0,0.5);
 }
 .btn-glove {
-  height: 64px;
+  height: 74px;
   width: auto;
   filter: hue-rotate(240deg) saturate(1.5);
   position: relative;
@@ -283,6 +297,19 @@ button { font-weight: bold; }
   text-shadow: 0 2px 8px rgba(0,0,0,0.9);
 }
 
+.no-lives-msg {
+  position: absolute;
+  bottom: 230px;
+  left: 0;
+  right: 0;
+  font-size: 18px;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 0 8px #ff2200, 0 2px 6px rgba(0,0,0,0.9);
+}
+
 .start-btn {
   width: 240px;
   height: 50px;
@@ -302,6 +329,11 @@ button { font-weight: bold; }
 .start-btn:active {
   transform: translateY(3px);
   box-shadow: 0 0 20px rgba(255,80,0,0.6), 0 2px 0 #6a1000;
+}
+.start-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  box-shadow: none;
 }
 /* 목숨 + 충전 행 */
 .lives-row {
@@ -341,11 +373,19 @@ button { font-weight: bold; }
   line-height: 1;
 }
 
+.home-btn-row {
+  display: flex;
+  gap: 8px;
+  width: auto;
+  justify-content: center;
+}
+
 .settings-btn {
+  width: 100px;
   background: #aaa;
   border: none;
   color: #111;
-  padding: 10px 24px;
+  padding: 10px 0;
   border-radius: 8px;
   font-size: 16px;
   font-weight: bold;
@@ -417,6 +457,35 @@ button { font-weight: bold; }
   100% { transform: translate(35px, 55px); opacity: 0; }
 }
 
+/* 별 */
+.stars-orbit {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 3;
+  transform: scaleY(0.35);
+}
+.star-arm {
+  position: absolute;
+  width: 0;
+  height: 0;
+  animation: starOrbitRot 1.5s linear infinite;
+  animation-delay: calc(var(--i) * -0.5s);
+}
+.star-dot {
+  position: absolute;
+  left: 65px;
+  font-size: 28px;
+  transform: translate(-50%, -50%) scaleY(2.86);
+}
+@keyframes starOrbitRot {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* 타격 이펙트 */
 .combo-wrap {
   position: relative;
@@ -435,6 +504,95 @@ button { font-weight: bold; }
   0%   { transform: scale(0.5); opacity: 1; }
   60%  { transform: scale(1.4); opacity: 1; }
   100% { transform: scale(1.0); opacity: 0; }
+}
+
+/* 튜토리얼 */
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.tutorial-box {
+  background: #1a1a2e;
+  border-radius: 20px;
+  padding: 32px 28px 28px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  border: 2px solid rgba(255,140,0,0.4);
+}
+.tutorial-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffe566;
+  margin: 0;
+  text-shadow: 0 0 12px #ff6600;
+}
+.tutorial-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tutorial-section-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffe566;
+  margin: 0;
+  text-shadow: 0 0 12px #ff6600;
+}
+.tutorial-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+.tutorial-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  color: #e0e0e0;
+  font-weight: 900;
+}
+.tutorial-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ff8c00;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tutorial-section:last-of-type .tutorial-step-num {
+  background: #e03000;
+}
+.tutorial-start-btn {
+  width: 100%;
+  height: 50px;
+  font-size: 20px;
+  font-weight: 900;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ff8c00 0%, #e03000 100%);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #6a1000;
+  letter-spacing: 2px;
+}
+.tutorial-start-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #6a1000;
 }
 
 /* 광고 모달 */

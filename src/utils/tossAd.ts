@@ -1,6 +1,9 @@
 import { loadFullScreenAd, showFullScreenAd } from '@apps-in-toss/web-framework'
 import { getOperationalEnvironment } from '@apps-in-toss/web-bridge'
 
+export const TEST_MODE = true // 배포 시 false로 변경
+
+
 export function isTossEnvironment(): boolean {
   try {
     return typeof window !== 'undefined' &&
@@ -11,10 +14,11 @@ export function isTossEnvironment(): boolean {
 }
 
 function getAdGroupId(): string {
+  if (TEST_MODE) return 'ait-ad-test-rewarded-id'
   try {
     return getOperationalEnvironment() === 'sandbox'
       ? 'ait-ad-test-rewarded-id'
-      : 'ait.v2.live.93ce2a2ea05b4289'
+      : 'ait.v2.live.5cc05be07a994871'
   } catch {
     return 'ait-ad-test-rewarded-id'
   }
