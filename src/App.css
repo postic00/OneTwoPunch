@@ -262,27 +262,30 @@ button { font-weight: bold; }
 }
 
 @keyframes title-rock {
-  0%   { transform: translateX(-50%) perspective(200px) rotateX(15deg); }
-  50%  { transform: translateX(-50%) perspective(200px) rotateX(25deg); }
-  100% { transform: translateX(-50%) perspective(200px) rotateX(15deg); }
+  0%   { transform: perspective(200px) rotateX(15deg); }
+  50%  { transform: perspective(200px) rotateX(25deg); }
+  100% { transform: perspective(200px) rotateX(15deg); }
 }
-.home-title {
+.home-title-wrap {
   position: absolute;
   top: 15%;
-  left: 50%;
-  font-size: 72px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+.home-title {
+  font-size: 90px;
   font-weight: 900;
   margin: 0;
   letter-spacing: 3px;
   white-space: nowrap;
   max-width: 90vw;
-  display: flex;
-  align-items: center;
   animation: title-rock 3s ease-in-out infinite;
 }
 .home-title {
   color: #ffe566;
-  -webkit-text-stroke: 0.03em #cc6600;
+  -webkit-text-stroke: 0.04em #cc3300;
   text-shadow:
     0.02em 0.02em 0 #555,
     0.04em 0.04em 0 #555,

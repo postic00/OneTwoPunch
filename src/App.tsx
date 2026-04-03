@@ -550,7 +550,9 @@ export default function App() {
     return (
       <>
         <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
-          <h1 className="home-title">{t('home.title')}</h1>
+          <div className="home-title-wrap">
+            <h1 className="home-title">{t('home.title')}</h1>
+          </div>
           <div className="best-score">{t('home.bestScore')} {bestScore} ⚡</div>
           {lives === 0 && (
             <p className="no-lives-msg">{t('home.noLives')}</p>
