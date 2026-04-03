@@ -1,0 +1,77 @@
+{
+  "home": {
+    "title": "Satu Dua Pukulan",
+    "start": "Mulai",
+    "infinite": "Tanpa Batas",
+    "settings": "⚙ Pengaturan",
+    "help": "? Bantuan",
+    "back": "Kembali",
+    "charge": "📺 Isi Ulang",
+    "sound": "🔊 Suara",
+    "bestScore": "⚡ Terbaik:",
+    "noLives": "Nyawa habis! Silakan isi ulang."
+  },
+  "infiniteSetup": {
+    "title": "Mode Tanpa Batas",
+    "desc": "Pilih foto lawanmu",
+    "selectPhoto": "Pilih Foto",
+    "loadingModel": "Memuat model...",
+    "analyzingFace": "Menganalisis wajah...",
+    "done": "Selesai!",
+    "noFace": "Wajah tidak terdeteksi.\nCoba foto lain.",
+    "reselect": "Pilih Ulang",
+    "start": "Mulai",
+    "close": "Tutup",
+    "error": "Error: {{msg}}"
+  },
+  "game": {
+    "hits": "Pukulan: {{n}}",
+    "combo": "{{n}} COMBO!",
+    "wrong": "Sisi yang salah!",
+    "timeout": "Terlalu lambat!",
+    "maxCombo": "Combo Maks: {{n}}",
+    "continue": "📺 Lanjutkan",
+    "home": "Beranda"
+  },
+  "records": {
+    "new1": "🏆 Rekor Baru!",
+    "new2": "🎉 Skor Terbaik!",
+    "new3": "🔥 Luar Biasa!",
+    "new4": "⚡ Tertinggi Baru!",
+    "new5": "👊 Tak Terbendung!"
+  },
+  "taunt": {
+    "miss": ["Mata melek?", "Sisi yang salah!", "Kiri atau kanan?", "Sengaja?", "Lihat ke mana?", "Sisi sebaliknya!", "Nebak-nebak?", "Aduh!", "Punya dua tangan kan?", "Aku tidak blocking!", "Sembarangan banget", "Lakukan lebih baik lain kali", "Tidak ada rasa arah?", "Bukan sisi itu!", "Kenapa mukul blockingnya?"],
+    "timeout": ["Cuma nonton?", "Lagi tidur siang?", "Tangan membeku?", "Ketiduran?", "Ada masalah reaksi", "Lambat banget...", "Lebih cepat dong", "Kesempatannya lewat", "Kebanyakan mikir?", "Cuma penonton?", "Waktunya banyak banget!", "Terlalu santai", "Tidak tahan 1 detik?", "Cepatlah!", "Cuma nonton?"]
+  },
+  "tutorial": {
+    "rules": "Aturan",
+    "step1": "Lawan memblok dengan satu sarung tinju",
+    "step2": "Pukul sisi lainnya dengan cepat!",
+    "gameOver": "Permainan Selesai",
+    "over1": "Memukul sisi yang diblok mengakhiri permainan",
+    "over2": "Kehabisan waktu mengakhiri permainan",
+    "infinite": "Mode Tanpa Batas",
+    "inf1": "Buat karakter sendiri dari foto",
+    "inf2": "Tingkat kesulitan bervariasi per hewan (★~★★★★★)",
+    "inf3": "Tidak ada pengurangan nyawa — kejar combo maksimal!",
+    "confirm": "OK"
+  },
+  "ad": {
+    "preparing": "Menyiapkan iklan...",
+    "close": "Tutup",
+    "confirm": "OK",
+    "rewardOk": "Hadiah berhasil diberikan.",
+    "rewardFail": "Hadiah tidak diberikan.",
+    "watching": "Menonton iklan...",
+    "skip": "Lewati"
+  },
+  "faceDetector": {
+    "loading": "Memuat model...",
+    "cameraFail": "Akses kamera gagal"
+  },
+  "animals": {
+    "1": "Anjing", "2": "Beruang", "3": "Rubah", "4": "Panda",
+    "5": "Kelinci", "6": "Harimau", "7": "Monyet", "8": "Kucing"
+  }
+}

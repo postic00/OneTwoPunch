@@ -1,0 +1,77 @@
+{
+  "home": {
+    "title": "Eins Zwei Schlag",
+    "start": "Starten",
+    "infinite": "Endlos",
+    "settings": "⚙ Einstellungen",
+    "help": "? Hilfe",
+    "back": "Zurück",
+    "charge": "📺 Aufladen",
+    "sound": "🔊 Sound",
+    "bestScore": "⚡ Bestzeit:",
+    "noLives": "Keine Leben mehr! Bitte aufladen."
+  },
+  "infiniteSetup": {
+    "title": "Endlosmodus",
+    "desc": "Wähle ein Foto deines Gegners",
+    "selectPhoto": "Foto auswählen",
+    "loadingModel": "Modell wird geladen...",
+    "analyzingFace": "Gesicht wird analysiert...",
+    "done": "Fertig!",
+    "noFace": "Kein Gesicht erkannt.\nBitte versuche ein anderes Foto.",
+    "reselect": "Neu auswählen",
+    "start": "Starten",
+    "close": "Schließen",
+    "error": "Fehler: {{msg}}"
+  },
+  "game": {
+    "hits": "Treffer: {{n}}",
+    "combo": "{{n}} COMBO!",
+    "wrong": "Falsche Seite!",
+    "timeout": "Zu langsam!",
+    "maxCombo": "Max Combo: {{n}}",
+    "continue": "📺 Weiter",
+    "home": "Startseite"
+  },
+  "records": {
+    "new1": "🏆 Neuer Rekord!",
+    "new2": "🎉 Bestes Ergebnis!",
+    "new3": "🔥 Unglaublich!",
+    "new4": "⚡ Neuer Höchststand!",
+    "new5": "👊 Unaufhaltsam!"
+  },
+  "taunt": {
+    "miss": ["Augen auf?", "Falsche Seite!", "Links oder rechts?", "Absichtlich?", "Wo schaust du hin?", "Andere Seite!", "Geraten?", "Hoppla!", "Du hast zwei Hände, oder?", "Ich hab gar nicht geblockt!", "Zu schlampig", "Beim nächsten Mal besser", "Kein Richtungssinn?", "Nicht diese Seite!", "Warum den Block treffen?"],
+    "timeout": ["Nur zugucken?", "Ein Nickerchen?", "Hände eingefroren?", "Eingeschlafen?", "Reaktionsproblem", "So langsam...", "Schneller bitte", "Chance verpasst", "Zu viel nachgedacht?", "Nur Zuschauer?", "Du hattest genug Zeit!", "Zu entspannt", "Nicht mal 1 Sek?", "Beeil dich!", "Nur zugucken?"]
+  },
+  "tutorial": {
+    "rules": "Regeln",
+    "step1": "Der Gegner blockt mit einem Handschuh",
+    "step2": "Triff die andere Seite schnell!",
+    "gameOver": "Spiel Vorbei",
+    "over1": "Die geblockte Seite zu treffen beendet das Spiel",
+    "over2": "Keine Zeit mehr beendet das Spiel",
+    "infinite": "Endlosmodus",
+    "inf1": "Erstelle deinen eigenen Charakter aus einem Foto",
+    "inf2": "Schwierigkeit variiert je nach Tier (★~★★★★★)",
+    "inf3": "Kein Lebensverlust — strebe nach dem maximalen Combo!",
+    "confirm": "OK"
+  },
+  "ad": {
+    "preparing": "Werbung wird vorbereitet...",
+    "close": "Schließen",
+    "confirm": "OK",
+    "rewardOk": "Belohnung erfolgreich erteilt.",
+    "rewardFail": "Belohnung wurde nicht erteilt.",
+    "watching": "Werbung wird angeschaut...",
+    "skip": "Überspringen"
+  },
+  "faceDetector": {
+    "loading": "Modell wird geladen...",
+    "cameraFail": "Kamerazugriff fehlgeschlagen"
+  },
+  "animals": {
+    "1": "Hund", "2": "Bär", "3": "Fuchs", "4": "Panda",
+    "5": "Hase", "6": "Tiger", "7": "Affe", "8": "Katze"
+  }
+}

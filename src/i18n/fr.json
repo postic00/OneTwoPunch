@@ -1,0 +1,77 @@
+{
+  "home": {
+    "title": "Un Deux Frappe",
+    "start": "Démarrer",
+    "infinite": "Infini",
+    "settings": "⚙ Paramètres",
+    "help": "? Aide",
+    "back": "Retour",
+    "charge": "📺 Recharger",
+    "sound": "🔊 Son",
+    "bestScore": "⚡ Meilleur:",
+    "noLives": "Plus de vies ! Veuillez recharger."
+  },
+  "infiniteSetup": {
+    "title": "Mode Infini",
+    "desc": "Sélectionnez une photo de votre adversaire",
+    "selectPhoto": "Choisir une Photo",
+    "loadingModel": "Chargement du modèle...",
+    "analyzingFace": "Analyse du visage...",
+    "done": "Terminé !",
+    "noFace": "Aucun visage détecté.\nVeuillez essayer une autre photo.",
+    "reselect": "Resélectionner",
+    "start": "Démarrer",
+    "close": "Fermer",
+    "error": "Erreur : {{msg}}"
+  },
+  "game": {
+    "hits": "Coups : {{n}}",
+    "combo": "{{n}} COMBO !",
+    "wrong": "Mauvais côté !",
+    "timeout": "Trop lent !",
+    "maxCombo": "Combo Max : {{n}}",
+    "continue": "📺 Continuer",
+    "home": "Accueil"
+  },
+  "records": {
+    "new1": "🏆 Nouveau Record !",
+    "new2": "🎉 Meilleur Score !",
+    "new3": "🔥 Incroyable !",
+    "new4": "⚡ Nouveau Sommet !",
+    "new5": "👊 Inarrêtable !"
+  },
+  "taunt": {
+    "miss": ["Les yeux ouverts ?", "Mauvais côté !", "Gauche ou droite ?", "C'était exprès ?", "Tu regardes où ?", "L'autre côté !", "Tu devines au hasard ?", "Aïe !", "T'as deux mains quand même ?", "Je ne bloquais pas !", "Trop négligent", "Fais mieux la prochaine fois", "Pas le sens de l'orientation ?", "Pas ce côté !", "Pourquoi taper sur le blocage ?"],
+    "timeout": ["T'es juste spectateur ?", "Tu faisais une sieste ?", "Les mains gelées ?", "Endormi ?", "Problème de temps de réaction", "Si lent...", "Plus vite s'il te plaît", "Tu as raté ta chance", "Trop réfléchi ?", "Tu regardes juste ?", "T'avais largement le temps !", "Trop détendu", "Même pas 1 sec ?", "Dépêche-toi !", "T'es juste spectateur ?"]
+  },
+  "tutorial": {
+    "rules": "Règles",
+    "step1": "L'adversaire bloque avec un gant",
+    "step2": "Frappe l'autre côté rapidement !",
+    "gameOver": "Fin de Partie",
+    "over1": "Frapper le côté bloqué met fin au jeu",
+    "over2": "Manquer de temps met fin au jeu",
+    "infinite": "Mode Infini",
+    "inf1": "Crée ton propre personnage depuis une photo",
+    "inf2": "La difficulté varie selon l'animal (★~★★★★★)",
+    "inf3": "Pas de perte de vie — vise le combo maximum !",
+    "confirm": "OK"
+  },
+  "ad": {
+    "preparing": "Préparation de la pub...",
+    "close": "Fermer",
+    "confirm": "OK",
+    "rewardOk": "Récompense accordée avec succès.",
+    "rewardFail": "La récompense n'a pas été accordée.",
+    "watching": "Visionnage de la pub...",
+    "skip": "Passer"
+  },
+  "faceDetector": {
+    "loading": "Chargement du modèle...",
+    "cameraFail": "Échec d'accès à la caméra"
+  },
+  "animals": {
+    "1": "Chien", "2": "Ours", "3": "Renard", "4": "Panda",
+    "5": "Lapin", "6": "Tigre", "7": "Singe", "8": "Chat"
+  }
+}

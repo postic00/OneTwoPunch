@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import * as faceapi from 'face-api.js'
+import * as faceapi from '@vladmandic/face-api'
 
 interface Props {
   onFaceDetected?: (detected: boolean) => void

@@ -1,0 +1,89 @@
+{
+  "home": {
+    "title": "One Two Punch",
+    "start": "Start",
+    "infinite": "Infinite",
+    "settings": "⚙ Settings",
+    "help": "? Help",
+    "back": "Back",
+    "charge": "📺 Charge",
+    "sound": "🔊 Sound",
+    "bestScore": "⚡ Best:",
+    "noLives": "No lives left! Please charge."
+  },
+  "infiniteSetup": {
+    "title": "Infinite Mode",
+    "desc": "Select a photo of your opponent",
+    "selectPhoto": "Select Photo",
+    "loadingModel": "Loading model...",
+    "analyzingFace": "Analyzing face...",
+    "done": "Done!",
+    "noFace": "No face detected.\nPlease try another photo.",
+    "reselect": "Reselect",
+    "start": "Start",
+    "close": "Close",
+    "error": "Error: {{msg}}"
+  },
+  "game": {
+    "hits": "Hits: {{n}}",
+    "combo": "{{n}} COMBO!",
+    "wrong": "Wrong side!",
+    "timeout": "Too slow!",
+    "maxCombo": "Max Combo: {{n}}",
+    "continue": "📺 Continue",
+    "home": "Home"
+  },
+  "records": {
+    "new1": "🏆 New Record!",
+    "new2": "🎉 Best Score!",
+    "new3": "🔥 Amazing!",
+    "new4": "⚡ New High!",
+    "new5": "👊 Unstoppable!"
+  },
+  "taunt": {
+    "miss": [
+      "Eyes open?", "Wrong side!", "Left or right?",
+      "On purpose?", "Where are you looking?", "Opposite side!",
+      "Just guessing?", "Oops!", "Two hands, right?",
+      "I wasn't blocking!", "Too sloppy", "Do better next time",
+      "No sense of direction?", "Not that side!", "Why hit the block?"
+    ],
+    "timeout": [
+      "Just watching?", "Taking a nap?", "Hands frozen?",
+      "Fell asleep?", "Reaction time issue", "So slow...",
+      "Faster please", "Missed your chance", "Overthinking?",
+      "Just spectating?", "You had plenty of time!", "Too relaxed",
+      "Couldn't last 1 sec?", "Hurry up!", "Just watching?"
+    ]
+  },
+  "tutorial": {
+    "rules": "Rules",
+    "step1": "Opponent blocks with one glove",
+    "step2": "Hit the other side quickly!",
+    "gameOver": "Game Over",
+    "over1": "Hitting the blocked side ends the game",
+    "over2": "Running out of time ends the game",
+    "infinite": "Infinite Mode",
+    "inf1": "Create your own character from a photo",
+    "inf2": "Difficulty varies by animal (★~★★★★★)",
+    "inf3": "No life loss — go for max combo!",
+    "confirm": "OK"
+  },
+  "ad": {
+    "preparing": "Preparing ad...",
+    "close": "Close",
+    "confirm": "OK",
+    "rewardOk": "Reward granted successfully.",
+    "rewardFail": "Reward was not granted.",
+    "watching": "Watching ad...",
+    "skip": "Skip"
+  },
+  "faceDetector": {
+    "loading": "Loading model...",
+    "cameraFail": "Camera access failed"
+  },
+  "animals": {
+    "1": "Dog", "2": "Bear", "3": "Fox", "4": "Panda",
+    "5": "Rabbit", "6": "Tiger", "7": "Monkey", "8": "Cat"
+  }
+}

@@ -1,10 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import './App.css'
 import { Capacitor } from '@capacitor/core'
 import { initAdMob } from './utils/admob'
 import { isTossEnvironment } from './utils/tossAd'
 import AdModal from './components/AdModal'
-import * as faceapi from 'face-api.js'
+import * as faceapi from '@vladmandic/face-api'
 
 function isAndroid() { return Capacitor.getPlatform() === 'android' }
 
@@ -18,7 +19,7 @@ type GameState = 'IDLE' | 'SETTINGS' | 'PLAYING' | 'GAMEOVER'
 
 const MAX_LIVES = 5
 const AD_MAX_LIVES = 20
-const INITIAL_TIME = 3000000 // 테스트용 3000초, 배포 시 3000으로 변경
+const INITIAL_TIME = 3000
 const MIN_TIME = 300
 const MIN_DECREASE = 2
 const CHARGE_INTERVAL_MS = 10 * 60 * 1000 // 10분
@@ -27,16 +28,8 @@ const CHARGE_INTERVAL_MS = 10 * 60 * 1000 // 10분
 const STAGE_THRESHOLDS = [0, 40, 90, 150, 220, 300, 390, 490, 600, 720]
 
 // 동물별 난이도 1~5 (1=쉬움, 5=어려움)
-const ANIMAL_NAMES: Record<number, string> = {
-  1: '강아지', 2: '곰', 3: '여우', 4: '판다',
-  5: '토끼', 6: '호랑이', 7: '원숭이', 8: '고양이', 9: '돼지',
-}
 const ANIMAL_DIFFICULTY: Record<number, number> = {
-  1: 2, 2: 3, 3: 4, 4: 1, 5: 1, 6: 5, 7: 4, 8: 2, 9: 2,
-}
-// 동물별 구멍 위치 오버라이드 (512 기준)
-const MASK_MOUTH_OVERRIDE: Record<number, { cy: number; rx: number; ry: number }> = {
-  9: { cy: 368, rx: 42, ry: 30 }, // 돼지: 주둥이 안쪽으로 내림
+  1: 2, 2: 3, 3: 4, 4: 1, 5: 1, 6: 5, 7: 4, 8: 2,
 }
 const DIFFICULTY_SETTINGS: Record<number, { initialTime: number; timeDecrease: number }> = {
   1: { initialTime: 3500, timeDecrease: 30 },
@@ -46,22 +39,8 @@ const DIFFICULTY_SETTINGS: Record<number, { initialTime: number; timeDecrease: n
   5: { initialTime: 1500, timeDecrease: 30 },
 }
 
-const TAUNT_MISS = [
-  '눈 뜨고 치셨어요?', '완전 반대잖아요', '왼오른쪽도 모르세요?',
-  '일부러 그런 건 아니죠?', '어디 보고 치셨어요?', '반대 아닌가요?',
-  '그냥 아무데나 치셨죠?', '잘못 건드리셨어요', '손이 두 개 맞아요?',
-  '저 방어 안 했는데요?', '실수도 너무하네요', '다음엔 제대로 좀요',
-  '방향감각 없으신가요?', '그쪽이 아닌데요?', '막힌 쪽을 왜 치세요?',
-]
-const TAUNT_TIMEOUT = [
-  '구경하러 오셨어요?', '낮잠 주무셨어요?', '손이 굳으셨나요?',
-  '잠깐 자셨어요?', '반응속도가 문제네요', '느릿느릿하시네요',
-  '좀 더 빨리요', '기회를 날려버리셨네요', '생각이 너무 많으시네요',
-  '구경만 하실 건가요?', '시간이 넉넉했는데요?', '너무 여유롭네요',
-  '1초도 못 버티셨어요?', '좀 서둘러 주세요', '보고만 계셨어요?',
-]
-function randomTaunt(isMiss: boolean) {
-  const arr = isMiss ? TAUNT_MISS : TAUNT_TIMEOUT
+function randomTaunt(isMiss: boolean, taunts: { miss: string[], timeout: string[] }) {
+  const arr = isMiss ? taunts.miss : taunts.timeout
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
@@ -153,6 +132,10 @@ function playClick() {
 
 
 export default function App() {
+  const { t, i18n } = useTranslation()
+  useEffect(() => { document.documentElement.lang = i18n.language }, [i18n.language])
+  const tauntsRef = useRef({ miss: [] as string[], timeout: [] as string[] })
+  tauntsRef.current = { miss: t('taunt.miss', { returnObjects: true }) as string[], timeout: t('taunt.timeout', { returnObjects: true }) as string[] }
   const [gameState, setGameState] = useState<GameState>('IDLE')
   const [lives, setLives] = useState(() => {
     const s = localStorage.getItem('boxing_lives')
@@ -198,7 +181,7 @@ export default function App() {
   const [recordMsg, setRecordMsg] = useState('')
 
   const soundRef = useRef(soundOn)
-  soundRef.current = soundOn
+  soundRef.current = soundOn // eslint-disable-line react-hooks/refs
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const flashResetRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -213,11 +196,17 @@ export default function App() {
   const nextChargeTimeRef = useRef(nextChargeTime)
   const timeDecreaseRef = useRef(30)
   const decreaseCountRef = useRef(0)
+  // eslint-disable-next-line react-hooks/refs
   stateRef.current = gameState
+  // eslint-disable-next-line react-hooks/refs
   blockRef.current = blockSide
+  // eslint-disable-next-line react-hooks/refs
   livesRef.current = lives
+  // eslint-disable-next-line react-hooks/refs
   timeLimitRef.current = timeLimit
+  // eslint-disable-next-line react-hooks/refs
   scoreRef.current = score
+  // eslint-disable-next-line react-hooks/refs
   nextChargeTimeRef.current = nextChargeTime
 
   // lives 변경 시 localStorage 저장 + 자동충전 타이머 설정
@@ -268,15 +257,15 @@ export default function App() {
     return () => clearInterval(tick)
   }, [])
 
-  const RECORD_MSGS = [
-    '🏆 신기록 달성!', '🎉 최고기록 경신!', '🔥 대단해요!', '⚡ 새 기록!', '👊 최강!',
-  ]
+  const recordMsgsRef = useRef<string[]>([])
+  recordMsgsRef.current = [t('records.new1'), t('records.new2'), t('records.new3'), t('records.new4'), t('records.new5')]
 
   const saveBest = useCallback((s: number) => {
     const prevBest = Number(localStorage.getItem('boxing_best') ?? 0)
     if (s > prevBest) {
       setIsNewBest(true)
-      setRecordMsg(RECORD_MSGS[Math.floor(Math.random() * RECORD_MSGS.length)])
+      const msgs = recordMsgsRef.current
+      setRecordMsg(msgs[Math.floor(Math.random() * msgs.length)])
       setBestScore(s)
       localStorage.setItem('boxing_best', String(s))
     }
@@ -299,7 +288,7 @@ export default function App() {
     timerRef.current = setTimeout(() => {
       setCombo(0)
       setFlash('MISS')
-      setTauntMsg(randomTaunt(false))
+      setTauntMsg(randomTaunt(false, tauntsRef.current))
       if (!infiniteModeRef.current) {
         const newLives = Math.max(0, livesRef.current - 1)
         setLives(newLives)
@@ -343,7 +332,7 @@ export default function App() {
         setCombo(c => {
           const next = c + 1
           setMaxCombo(m => Math.max(m, next))
-          if (soundRef.current) next >= 10 ? playCombo(next) : playHit()
+          if (soundRef.current) { if (next >= 10) { playCombo(next) } else { playHit() } }
           return next
         })
       }
@@ -363,7 +352,7 @@ export default function App() {
     } else {
       setFlash('MISS')
       setCombo(0)
-      setTauntMsg(randomTaunt(true))
+      setTauntMsg(randomTaunt(true, tauntsRef.current))
       if (!infiniteModeRef.current) {
         const newLives = Math.max(0, livesRef.current - 1)
         setLives(newLives)
@@ -432,7 +421,7 @@ export default function App() {
   // 스테이지 변경 시 캐릭터 전환 씬
   useEffect(() => {
     const newStage = getStage(score)
-    if (newStage === charStage || charTransitioning.current) return
+    if (newStage === charStage || charTransitioning.current || infiniteModeRef.current) return
     charTransitioning.current = true
     const exits: Array<'exit-left' | 'exit-right' | 'exit-down'> = ['exit-left', 'exit-right', 'exit-down']
     const exitDir = exits[Math.floor(Math.random() * exits.length)]
@@ -474,7 +463,7 @@ export default function App() {
           if (remaining <= 0) {
             setCombo(0)
             setFlash('MISS')
-            setTauntMsg(randomTaunt(false))
+            setTauntMsg(randomTaunt(false, tauntsRef.current))
             const newLives = Math.max(0, livesRef.current - 1)
             setLives(newLives)
             livesRef.current = newLives
@@ -485,7 +474,7 @@ export default function App() {
             timerRef.current = setTimeout(() => {
               setCombo(0)
               setFlash('MISS')
-              setTauntMsg(randomTaunt(false))
+              setTauntMsg(randomTaunt(false, tauntsRef.current))
               const newLives = Math.max(0, livesRef.current - 1)
               setLives(newLives)
               livesRef.current = newLives
@@ -528,7 +517,7 @@ export default function App() {
         <span className="hp-text">{lives}/{MAX_LIVES}</span>
       </div>
       <button className="charge-btn" onClick={handleAdCharge}>
-        <span>📺 충전</span>
+        <span>{t('home.charge')}</span>
         {lives < MAX_LIVES && chargeCountdown > 0 && (
           <span className="charge-timer-inline">
             {Math.floor(chargeCountdown / 60)}:{String(chargeCountdown % 60).padStart(2, '0')}
@@ -544,14 +533,14 @@ export default function App() {
         <div className="home-bottom">
           <div className="settings-list">
             <div className="settings-row">
-              <span>🔊 소리</span>
+              <span>{t('home.sound')}</span>
               <button
                 className={`toggle ${soundOn ? 'on' : 'off'}`}
                 onClick={() => setSoundOn(v => { const next = !v; localStorage.setItem('boxing_sound', next ? 'on' : 'off'); if (next) playClick(); return next })}
               >{soundOn ? 'ON' : 'OFF'}</button>
             </div>
           </div>
-          <button className="start-btn" onClick={() => setGameState('IDLE')}>돌아가기</button>
+          <button className="start-btn" onClick={() => setGameState('IDLE')}>{t('home.back')}</button>
         </div>
       </div>
     )
@@ -561,19 +550,20 @@ export default function App() {
     return (
       <>
         <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
-          <div className="best-score">⚡ 최고 점수: {bestScore} ⚡</div>
+          <h1 className="home-title">{t('home.title')}</h1>
+          <div className="best-score">{t('home.bestScore')} {bestScore} ⚡</div>
           {lives === 0 && (
-            <p className="no-lives-msg">목숨이 없어요! 충전 버튼을 눌러주세요</p>
+            <p className="no-lives-msg">{t('home.noLives')}</p>
           )}
           <div className="home-bottom">
             {livesBlock}
             <div className="start-btn-row">
-              <button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>시작하기</button>
-              <button className="infinite-btn" onClick={() => setShowInfiniteSetup(true)}>무한모드</button>
+              <button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>{t('home.start')}</button>
+              <button className="infinite-btn" onClick={() => setShowInfiniteSetup(true)}>{t('home.infinite')}</button>
             </div>
             <div className="home-btn-row">
-              <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
-              <button className="settings-btn" onClick={() => setShowTutorial(true)}>? 도움말</button>
+              <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>{t('home.settings')}</button>
+              <button className="settings-btn" onClick={() => setShowTutorial(true)}>{t('home.help')}</button>
             </div>
           </div>
         </div>
@@ -592,8 +582,8 @@ export default function App() {
         {showInfiniteSetup && (
           <div className="tutorial-overlay" onClick={() => { setShowInfiniteSetup(false); setInfiniteReady(false); if (!infiniteMode) setInfiniteCharUrl(null) }}>
             <div className="infinite-setup-box" onClick={e => e.stopPropagation()}>
-              <p className="infinite-setup-title">무한모드</p>
-              <p className="infinite-setup-desc">상대방의 사진을 선택해주세요</p>
+              <p className="infinite-setup-title">{t('infiniteSetup.title')}</p>
+              <p className="infinite-setup-desc">{t('infiniteSetup.desc')}</p>
               {infiniteError && (
                 <p className="infinite-error-msg">{infiniteError}</p>
               )}
@@ -603,26 +593,26 @@ export default function App() {
                     <div className="infinite-loading-fill" style={{ width: `${infiniteProgress}%` }} />
                   </div>
                   <span className="infinite-loading-text">
-                    {infiniteProgress < 60 ? '모델 로딩 중...' : infiniteProgress < 100 ? '얼굴 분석 중...' : '완료!'}
+                    {infiniteProgress < 60 ? t('infiniteSetup.loadingModel') : infiniteProgress < 100 ? t('infiniteSetup.analyzingFace') : t('infiniteSetup.done')}
                   </span>
                 </div>
               )}
               {infiniteReady && infiniteCharUrl && (
                 <div className="infinite-preview">
                   <img src={infiniteCharUrl} className="infinite-preview-char" alt="캐릭터" />
-                  <p className="infinite-preview-name">{ANIMAL_NAMES[infiniteAnimalIdx]}</p>
+                  <p className="infinite-preview-name">{t(`animals.${infiniteAnimalIdx}`)}</p>
                   <div className="infinite-preview-stars">
                     {'★'.repeat(infiniteDifficulty)}{'☆'.repeat(5 - infiniteDifficulty)}
                   </div>
                   <div className="infinite-preview-btns">
-                    <button className="infinite-retry-btn" onClick={() => { setInfiniteReady(false); setInfiniteCharUrl(null) }}>다시 선택</button>
-                    <button className="infinite-start-btn" onClick={() => { setInfiniteReady(false); setShowInfiniteSetup(false); startInfiniteGame() }}>시작</button>
+                    <button className="infinite-retry-btn" onClick={() => { setInfiniteReady(false); setInfiniteCharUrl(null) }}>{t('infiniteSetup.reselect')}</button>
+                    <button className="infinite-start-btn" onClick={() => { setInfiniteReady(false); setShowInfiniteSetup(false); startInfiniteGame() }}>{t('infiniteSetup.start')}</button>
                   </div>
                 </div>
               )}
               {!infiniteLoading && !infiniteReady && (
               <label className="infinite-photo-btn">
-                사진 선택
+                {t('infiniteSetup.selectPhoto')}
                 <input
                   type="file"
                   accept="image/*"
@@ -660,13 +650,13 @@ export default function App() {
                         setInfiniteLoading(false)
                         setInfiniteProgress(0)
                         URL.revokeObjectURL(url)
-                        setInfiniteError('얼굴을 찾을 수 없어요.\n다른 사진을 선택해주세요.')
+                        setInfiniteError(t('infiniteSetup.noFace'))
                         return
                       }
 
                       // 512×512 캐릭터 합성
                       // 레이어 순서: 몸통 → 눈/코입(마스크 구멍 위치) → SVG 마스크
-                      const maskPool = [9] // 테스트: 돼지만
+                      const maskPool = [1,2,3,4,5,6,7,8]
                       const maskIdx = maskPool[Math.floor(Math.random() * maskPool.length)]
                       const maskName = `21_animal_${maskIdx}`
                       const pts = result.landmarks.positions
@@ -686,11 +676,10 @@ export default function App() {
                       // 머리(마스크) 영역: 상단 400×400, 여백 없이 전체 너비
                       const HEAD_X = 0, HEAD_Y = 0, HEAD_W = 400, HEAD_H = 400
                       const hs = HEAD_W / 512
-                      const mouthOvr = MASK_MOUTH_OVERRIDE[maskIdx]
                       const HOLES = {
                         rightEye:  { cx: 170*hs, cy: 212*hs, rx: 52*hs, ry: 36*hs },
                         leftEye:   { cx: 342*hs, cy: 212*hs, rx: 52*hs, ry: 36*hs },
-                        mouthNose: { cx: 256*hs, cy: (mouthOvr?.cy ?? 338)*hs, rx: (mouthOvr?.rx ?? 46)*hs, ry: (mouthOvr?.ry ?? 34)*hs },
+                        mouthNose: { cx: 256*hs, cy: 338*hs, rx: 46*hs, ry: 34*hs },
                       }
 
                       const faceImg = new Image()
@@ -730,52 +719,43 @@ export default function App() {
                       const nx = 256*hs, ny = 278*hs
                       const noses: Record<number, () => void> = {
                         1: () => { // 개 — 검은 삼각 코
-                          ctx.beginPath(); ctx.moveTo(nx, ny-10*hs); ctx.lineTo(nx-14*hs, ny+8*hs); ctx.lineTo(nx+14*hs, ny+8*hs); ctx.closePath()
+                          ctx.beginPath(); ctx.moveTo(nx, ny-20*hs); ctx.lineTo(nx-28*hs, ny+16*hs); ctx.lineTo(nx+28*hs, ny+16*hs); ctx.closePath()
                           ctx.fillStyle = '#222'; ctx.fill()
                         },
                         2: () => { // 곰 — 넓은 타원 코
-                          ctx.beginPath(); ctx.ellipse(nx, ny, 18*hs, 12*hs, 0, 0, Math.PI*2)
+                          ctx.beginPath(); ctx.ellipse(nx, ny, 36*hs, 24*hs, 0, 0, Math.PI*2)
                           ctx.fillStyle = '#1a1a1a'; ctx.fill()
                         },
                         3: () => { // 여우 — 검은 삼각 코
-                          ctx.beginPath(); ctx.moveTo(nx, ny-8*hs); ctx.lineTo(nx-12*hs, ny+8*hs); ctx.lineTo(nx+12*hs, ny+8*hs); ctx.closePath()
+                          ctx.beginPath(); ctx.moveTo(nx, ny-16*hs); ctx.lineTo(nx-24*hs, ny+16*hs); ctx.lineTo(nx+24*hs, ny+16*hs); ctx.closePath()
                           ctx.fillStyle = '#111'; ctx.fill()
                         },
-                        4: () => { // 판다 — 작은 검은 코
-                          ctx.beginPath(); ctx.ellipse(nx, ny, 12*hs, 9*hs, 0, 0, Math.PI*2)
+                        4: () => { // 판다 — 검은 타원 코
+                          ctx.beginPath(); ctx.ellipse(nx, ny, 24*hs, 18*hs, 0, 0, Math.PI*2)
                           ctx.fillStyle = '#111'; ctx.fill()
                         },
-                        5: () => { // 토끼 — 작은 Y자 코
-                          ctx.strokeStyle = '#c97b8a'; ctx.lineWidth = 3*hs; ctx.lineCap = 'round'
-                          ctx.beginPath(); ctx.moveTo(nx, ny-6*hs); ctx.lineTo(nx, ny+4*hs)
-                          ctx.moveTo(nx, ny+4*hs); ctx.lineTo(nx-8*hs, ny+10*hs)
-                          ctx.moveTo(nx, ny+4*hs); ctx.lineTo(nx+8*hs, ny+10*hs)
+                        5: () => { // 토끼 — Y자 코
+                          ctx.strokeStyle = '#c97b8a'; ctx.lineWidth = 6*hs; ctx.lineCap = 'round'
+                          ctx.beginPath(); ctx.moveTo(nx, ny-12*hs); ctx.lineTo(nx, ny+8*hs)
+                          ctx.moveTo(nx, ny+8*hs); ctx.lineTo(nx-16*hs, ny+20*hs)
+                          ctx.moveTo(nx, ny+8*hs); ctx.lineTo(nx+16*hs, ny+20*hs)
                           ctx.stroke()
                         },
                         6: () => { // 호랑이 — 분홍 삼각 코
-                          ctx.beginPath(); ctx.moveTo(nx, ny-10*hs); ctx.lineTo(nx-14*hs, ny+8*hs); ctx.lineTo(nx+14*hs, ny+8*hs); ctx.closePath()
+                          ctx.beginPath(); ctx.moveTo(nx, ny-20*hs); ctx.lineTo(nx-28*hs, ny+16*hs); ctx.lineTo(nx+28*hs, ny+16*hs); ctx.closePath()
                           ctx.fillStyle = '#d4637a'; ctx.fill()
                         },
                         7: () => { // 원숭이 — 넓은 타원 코
-                          ctx.beginPath(); ctx.ellipse(nx, ny+4*hs, 20*hs, 12*hs, 0, 0, Math.PI*2)
+                          ctx.beginPath(); ctx.ellipse(nx, ny+8*hs, 40*hs, 24*hs, 0, 0, Math.PI*2)
                           ctx.fillStyle = '#c07850'; ctx.fill()
-                          ctx.beginPath(); ctx.ellipse(nx-8*hs, ny+4*hs, 6*hs, 5*hs, 0, 0, Math.PI*2)
+                          ctx.beginPath(); ctx.ellipse(nx-16*hs, ny+8*hs, 12*hs, 10*hs, 0, 0, Math.PI*2)
                           ctx.fillStyle = '#7a3a10'; ctx.fill()
-                          ctx.beginPath(); ctx.ellipse(nx+8*hs, ny+4*hs, 6*hs, 5*hs, 0, 0, Math.PI*2)
+                          ctx.beginPath(); ctx.ellipse(nx+16*hs, ny+8*hs, 12*hs, 10*hs, 0, 0, Math.PI*2)
                           ctx.fillStyle = '#7a3a10'; ctx.fill()
                         },
-                        8: () => { // 토끼2 — 분홍 작은 코
-                          ctx.beginPath(); ctx.ellipse(nx, ny, 10*hs, 7*hs, 0, 0, Math.PI*2)
+                        8: () => { // 토끼2 — 분홍 타원 코
+                          ctx.beginPath(); ctx.ellipse(nx, ny, 20*hs, 14*hs, 0, 0, Math.PI*2)
                           ctx.fillStyle = '#e8a0b0'; ctx.fill()
-                        },
-                        9: () => { // 돼지 — 주둥이
-                          const py = 360*hs
-                          ctx.beginPath(); ctx.ellipse(nx, py, 52*hs, 38*hs, 0, 0, Math.PI*2)
-                          ctx.fillStyle = '#f09090'; ctx.fill()
-                          ctx.beginPath(); ctx.ellipse(nx-18*hs, py+6*hs, 12*hs, 10*hs, 0, 0, Math.PI*2)
-                          ctx.fillStyle = '#c06060'; ctx.fill()
-                          ctx.beginPath(); ctx.ellipse(nx+18*hs, py+6*hs, 12*hs, 10*hs, 0, 0, Math.PI*2)
-                          ctx.fillStyle = '#c06060'; ctx.fill()
                         },
                       }
                       noses[maskIdx]?.()
@@ -799,14 +779,14 @@ export default function App() {
                       setInfiniteProgress(0)
                       URL.revokeObjectURL(url)
                       const msg = err instanceof Error ? err.message : String(err)
-                      setInfiniteError(`오류: ${msg}`)
+                      setInfiniteError(t('infiniteSetup.error', { msg }))
                     }
                   }}
                 />
               </label>
               )}
               {!infiniteLoading && !infiniteReady && (
-                <button className="infinite-setup-close" onClick={() => { setShowInfiniteSetup(false); setInfiniteCharUrl(null) }}>닫기</button>
+                <button className="infinite-setup-close" onClick={() => { setShowInfiniteSetup(false); setInfiniteCharUrl(null) }}>{t('infiniteSetup.close')}</button>
               )}
             </div>
           </div>
@@ -815,32 +795,49 @@ export default function App() {
           <div className="tutorial-overlay">
             <div className="tutorial-box">
               <div className="tutorial-section">
-                <p className="tutorial-section-title">게임 규칙</p>
+                <p className="tutorial-section-title">{t('tutorial.rules')}</p>
                 <div className="tutorial-steps">
                   <div className="tutorial-step">
                     <span className="tutorial-step-num">1</span>
-                    <span>상대가 한쪽 글러브로 막습니다</span>
+                    <span>{t('tutorial.step1')}</span>
                   </div>
                   <div className="tutorial-step">
                     <span className="tutorial-step-num">2</span>
-                    <span>막지 않은 반대쪽을 빠르게 쳐요!</span>
+                    <span>{t('tutorial.step2')}</span>
                   </div>
                 </div>
               </div>
               <div className="tutorial-section">
-                <p className="tutorial-section-title">게임 오버</p>
+                <p className="tutorial-section-title">{t('tutorial.gameOver')}</p>
                 <div className="tutorial-steps">
                   <div className="tutorial-step">
                     <span className="tutorial-step-num">!</span>
-                    <span>막은 쪽을 치면 게임이 끝나요</span>
+                    <span>{t('tutorial.over1')}</span>
                   </div>
                   <div className="tutorial-step">
                     <span className="tutorial-step-num">!</span>
-                    <span>시간 초과시 게임이 끝나요</span>
+                    <span>{t('tutorial.over2')}</span>
                   </div>
                 </div>
               </div>
-              <button className="tutorial-start-btn" onClick={() => { localStorage.setItem('boxing_tutorial_done', '1'); setShowTutorial(false) }}>확인</button>
+              <div className="tutorial-section">
+                <p className="tutorial-section-title">{t('tutorial.infinite')}</p>
+                <div className="tutorial-steps">
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">★</span>
+                    <span>{t('tutorial.inf1')}</span>
+                  </div>
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">★</span>
+                    <span>{t('tutorial.inf2')}</span>
+                  </div>
+                  <div className="tutorial-step">
+                    <span className="tutorial-step-num">★</span>
+                    <span>{t('tutorial.inf3')}</span>
+                  </div>
+                </div>
+              </div>
+              <button className="tutorial-start-btn" onClick={() => { localStorage.setItem('boxing_tutorial_done', '1'); setShowTutorial(false) }}>{t('tutorial.confirm')}</button>
             </div>
           </div>
         )}
@@ -857,7 +854,7 @@ export default function App() {
           const next = STAGE_THRESHOLDS[Math.min(stage, STAGE_THRESHOLDS.length - 1)]
           setScore(next)
           scoreRef.current = next
-        }}>타격: {score}</div>
+        }}>{ t('game.hits', { n: score }) }</div>
       </div>
 
       <div key={hitEffectKey} className={`opponent ${flash === 'MISS' ? 'miss' : ''}`}>
@@ -869,7 +866,7 @@ export default function App() {
           <img src="/asset/2_glove.png" className={`glove left ${gameState === 'PLAYING' && blockSide === 'LEFT' ? 'blocking' : ''}`} />
           <img src={infiniteMode && infiniteCharUrl ? infiniteCharUrl : `/asset/${charStage + 9}_char.png`} className={`boxer-body char-${charAnim}`} />
           <img src="/asset/2_glove_r.png" className={`glove right ${gameState === 'PLAYING' && blockSide === 'RIGHT' ? 'blocking' : ''}`} />
-          {isOverThirdStage(score) && (
+          {(infiniteMode ? combo >= 10 : isOverThirdStage(score)) && (
             <svg className="sweat-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
               <ellipse className="sweat-drop d1" cx="50" cy="10" rx="3.5" ry="5.5" fill="#7ec8e3" opacity="0.9"/>
               <ellipse className="sweat-drop d2" cx="50" cy="10" rx="3" ry="5" fill="#7ec8e3" opacity="0.9"/>
@@ -877,7 +874,7 @@ export default function App() {
               <ellipse className="sweat-drop d4" cx="50" cy="10" rx="3" ry="5" fill="#7ec8e3" opacity="0.9"/>
             </svg>
           )}
-          {isOverTwoThirdsStage(score) && (
+          {(infiniteMode ? combo >= 20 : isOverTwoThirdsStage(score)) && (
             <div className="stars-orbit">
               {[0,1,2].map(i => (
                 <div key={i} className="star-arm" style={{ '--i': i } as React.CSSProperties}>
@@ -910,16 +907,18 @@ export default function App() {
         <div className="overlay">
           <div className="overlay-content">
             <div className="gameover-newbest">
-              {isNewBest && <p className="gameover-record">{recordMsg}</p>}
-              <p className="gameover-taunt">{tauntMsg}</p>
+              {isNewBest
+                ? <p className="gameover-record">{recordMsg}</p>
+                : <p className="gameover-taunt">{tauntMsg}</p>
+              }
             </div>
-            <p className="gameover-reason">{flash === 'MISS' ? '잘못 쳤어요!' : '시간 초과!'}</p>
-            <div className="score-info">타격: {score}</div>
-            <p className="gameover-combo">최대 콤보: {maxCombo}</p>
+            <p className="gameover-reason">{flash === 'MISS' ? t('game.wrong') : t('game.timeout')}</p>
+            <div className="score-info">{t('game.hits', { n: score })}</div>
+            <p className="gameover-combo">{t('game.maxCombo', { n: maxCombo })}</p>
             {!usedContinue && (
-              <button className="overlay-btn" onClick={continueGame}>📺 이어하기</button>
+              <button className="overlay-btn" onClick={continueGame}>{t('game.continue')}</button>
             )}
-            <button className="overlay-btn-sub" onClick={() => { clearTimers(); setInfiniteMode(false); infiniteModeRef.current = false; setGameState('IDLE') }}>홈으로</button>
+            <button className="overlay-btn-sub" onClick={() => { clearTimers(); setInfiniteMode(false); infiniteModeRef.current = false; setGameState('IDLE') }}>{t('game.home')}</button>
           </div>
         </div>
       )}

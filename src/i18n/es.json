@@ -1,0 +1,77 @@
+{
+  "home": {
+    "title": "Uno Dos Golpe",
+    "start": "Iniciar",
+    "infinite": "Infinito",
+    "settings": "⚙ Ajustes",
+    "help": "? Ayuda",
+    "back": "Volver",
+    "charge": "📺 Recargar",
+    "sound": "🔊 Sonido",
+    "bestScore": "⚡ Récord:",
+    "noLives": "¡Sin vidas! Por favor recarga."
+  },
+  "infiniteSetup": {
+    "title": "Modo Infinito",
+    "desc": "Selecciona una foto de tu oponente",
+    "selectPhoto": "Elegir Foto",
+    "loadingModel": "Cargando modelo...",
+    "analyzingFace": "Analizando rostro...",
+    "done": "¡Listo!",
+    "noFace": "No se detectó ningún rostro.\nPor favor intenta con otra foto.",
+    "reselect": "Volver a elegir",
+    "start": "Iniciar",
+    "close": "Cerrar",
+    "error": "Error: {{msg}}"
+  },
+  "game": {
+    "hits": "Golpes: {{n}}",
+    "combo": "¡{{n}} COMBO!",
+    "wrong": "¡Lado incorrecto!",
+    "timeout": "¡Demasiado lento!",
+    "maxCombo": "Combo Máx: {{n}}",
+    "continue": "📺 Continuar",
+    "home": "Inicio"
+  },
+  "records": {
+    "new1": "🏆 ¡Nuevo Récord!",
+    "new2": "🎉 ¡Mejor Puntuación!",
+    "new3": "🔥 ¡Increíble!",
+    "new4": "⚡ ¡Nuevo Máximo!",
+    "new5": "👊 ¡Imparable!"
+  },
+  "taunt": {
+    "miss": ["¿Ojos abiertos?", "¡Lado equivocado!", "¿Izquierda o derecha?", "¿A propósito?", "¿Dónde miras?", "¡Al otro lado!", "¿Adivinando?", "¡Ups!", "¿Tienes dos manos?", "¡No estaba bloqueando!", "Qué descuidado", "Hazlo mejor la próxima vez", "¿Sin sentido de la dirección?", "¡No era ese lado!", "¿Por qué golpear el bloqueo?"],
+    "timeout": ["¿Solo mirando?", "¿Echando una siesta?", "¿Manos congeladas?", "¿Te quedaste dormido?", "Problemas de reacción", "Tan lento...", "Más rápido por favor", "Perdiste tu oportunidad", "¿Pensando demasiado?", "¿Solo de espectador?", "¡Tenías tiempo de sobra!", "Demasiado relajado", "¿No aguantaste 1 seg?", "¡Apúrate!", "¿Solo mirando?"]
+  },
+  "tutorial": {
+    "rules": "Reglas",
+    "step1": "El oponente bloquea con un guante",
+    "step2": "¡Golpea el otro lado rápidamente!",
+    "gameOver": "Fin del Juego",
+    "over1": "Golpear el lado bloqueado termina el juego",
+    "over2": "Quedarse sin tiempo termina el juego",
+    "infinite": "Modo Infinito",
+    "inf1": "Crea tu propio personaje desde una foto",
+    "inf2": "La dificultad varía según el animal (★~★★★★★)",
+    "inf3": "Sin pérdida de vidas — ¡busca el combo máximo!",
+    "confirm": "OK"
+  },
+  "ad": {
+    "preparing": "Preparando anuncio...",
+    "close": "Cerrar",
+    "confirm": "OK",
+    "rewardOk": "Recompensa otorgada con éxito.",
+    "rewardFail": "No se pudo otorgar la recompensa.",
+    "watching": "Viendo anuncio...",
+    "skip": "Saltar"
+  },
+  "faceDetector": {
+    "loading": "Cargando modelo...",
+    "cameraFail": "Fallo al acceder a la cámara"
+  },
+  "animals": {
+    "1": "Perro", "2": "Oso", "3": "Zorro", "4": "Panda",
+    "5": "Conejo", "6": "Tigre", "7": "Mono", "8": "Gato"
+  }
+}
