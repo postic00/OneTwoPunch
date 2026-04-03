@@ -17,7 +17,7 @@ type GameState = 'IDLE' | 'SETTINGS' | 'PLAYING' | 'GAMEOVER'
 
 const MAX_LIVES = 5
 const AD_MAX_LIVES = 20
-const INITIAL_TIME = 3000
+const INITIAL_TIME = 300000
 const MIN_TIME = 300
 const MIN_DECREASE = 1
 const CHARGE_INTERVAL_MS = 10 * 60 * 1000 // 10분
@@ -143,7 +143,8 @@ export default function App() {
   })
   const [blockSide, setBlockSide] = useState<Side>('LEFT')
   const [timeLimit, setTimeLimit] = useState(INITIAL_TIME)
-  const [timeLeft, setTimeLeft] = useState(INITIAL_TIME)
+  const timerBarRef = useRef<HTMLDivElement>(null)
+  const timerDangerRef = useRef(false)
   const [score, setScore] = useState(0)
   const [flash, setFlash] = useState<'HIT' | 'MISS' | null>(null)
   const [bestScore, setBestScore] = useState(() => Number(localStorage.getItem('boxing_best') ?? 0))
@@ -256,7 +257,7 @@ export default function App() {
     const newBlock: Side = Math.random() < 0.5 ? 'LEFT' : 'RIGHT'
     setBlockSide(newBlock)
     blockRef.current = newBlock
-    setTimeLeft(tl)
+    if (timerBarRef.current) timerBarRef.current.style.height = '100%'
     startTimeRef.current = performance.now()
     flashResetRef.current = setTimeout(() => setFlash(null), 350)
 
@@ -273,9 +274,18 @@ export default function App() {
       setGameState('GAMEOVER')
     }, tl)
 
+    timerDangerRef.current = false
     const tick = () => {
       const elapsed = performance.now() - startTimeRef.current
-      setTimeLeft(Math.max(0, tl - elapsed))
+      const pct = Math.max(0, (tl - elapsed) / tl)
+      if (timerBarRef.current) {
+        timerBarRef.current.style.height = `${pct * 100}%`
+        const isDanger = pct < 0.3
+        if (isDanger !== timerDangerRef.current) {
+          timerDangerRef.current = isDanger
+          timerBarRef.current.classList.toggle('danger', isDanger)
+        }
+      }
       rafRef.current = requestAnimationFrame(tick)
     }
     rafRef.current = requestAnimationFrame(tick)
@@ -354,7 +364,6 @@ export default function App() {
   useEffect(() => () => clearTimers(), [clearTimers])
   useEffect(() => { initAdMob() }, [])
 
-  const timerPct = timeLeft / timeLimit
 
   const livesBlock = (
     <div className="lives-row">
@@ -405,14 +414,28 @@ export default function App() {
 
   if (gameState === 'IDLE') {
     return (
-      <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
-        <div className="best-score">⚡ 최고 점수: {bestScore} ⚡</div>
-        <div className="home-bottom">
-          {livesBlock}
-<button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>시작하기</button>
-          <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
+      <>
+        <div className="home" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
+          <div className="best-score">⚡ 최고 점수: {bestScore} ⚡</div>
+          <div className="home-bottom">
+            {livesBlock}
+            <button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>시작하기</button>
+            <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>⚙ 설정</button>
+          </div>
         </div>
-      </div>
+        {adModal === 'charge' && (
+          <AdModal
+            onComplete={() => {
+              setAdModal(null)
+              if (livesRef.current >= AD_MAX_LIVES) return
+              const next = livesRef.current + 1
+              setLives(next)
+              livesRef.current = next
+            }}
+            onClose={() => setAdModal(null)}
+          />
+        )}
+      </>
     )
   }
 
@@ -445,8 +468,9 @@ export default function App() {
 
       <div className={`timer-bar-wrap ${blockSide === 'LEFT' ? 'right' : 'left'} ${flash === 'HIT' ? 'hidden' : ''}`}>
         <div
-          className={`timer-bar-fill ${timerPct < 0.3 ? 'danger' : ''}`}
-          style={{ height: `${timerPct * 100}%` }}
+          ref={timerBarRef}
+          className="timer-bar-fill"
+          style={{ height: '100%' }}
         />
       </div>
 
