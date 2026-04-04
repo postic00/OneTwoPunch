@@ -2,7 +2,7 @@ import { AdMob, RewardAdPluginEvents } from '@capacitor-community/admob'
 import { Capacitor } from '@capacitor/core'
 import { isTossEnvironment, showTossRewardedAd, preloadTossAd, TEST_MODE } from './tossAd'
 
-const REWARDED_AD_ID = 'ca-app-pub-1253913975799895/1209453159'
+const REWARDED_AD_ID = 'ca-app-pub-1253913975799895/8806308934'
 
 export async function initAdMob() {
   if (isTossEnvironment()) {

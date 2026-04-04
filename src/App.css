@@ -285,14 +285,16 @@ button { font-weight: bold; }
 }
 .home-title {
   color: #ffe566;
-  -webkit-text-stroke: 0.04em #cc3300;
   text-shadow:
-    0.02em 0.02em 0 #555,
-    0.04em 0.04em 0 #555,
-    0.06em 0.06em 0 #444,
-    0.08em 0.08em 0 #444,
-    0.10em 0.10em 0 #333,
-    0.12em 0.16em 0.25em rgba(0,0,0,0.7);
+    -3px -3px 0 #cc3300, 0 -3px 0 #cc3300, 3px -3px 0 #cc3300,
+    -3px  0   0 #cc3300,                    3px  0   0 #cc3300,
+    -3px  3px 0 #cc3300, 0  3px 0 #cc3300, 3px  3px 0 #cc3300,
+    3px  3px 0 #555,
+    6px  6px 0 #555,
+    9px  9px 0 #444,
+    12px 12px 0 #444,
+    15px 15px 0 #333,
+    18px 22px 18px rgba(0,0,0,0.7);
 }
 /* 전각 7자 */
 :lang(ja) .home-title {
