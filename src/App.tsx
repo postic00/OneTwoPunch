@@ -447,12 +447,14 @@ export default function App() {
     const pauseTimeRef = { current: 0 }
     const handleVisibilityChange = () => {
       if (document.hidden) {
+        _ac?.suspend()
         if (stateRef.current === 'PLAYING') {
           pauseTimeRef.current = performance.now()
           if (timerRef.current) clearTimeout(timerRef.current)
           if (rafRef.current) cancelAnimationFrame(rafRef.current)
         }
       } else {
+        _ac?.resume()
         if (stateRef.current === 'PLAYING' && pauseTimeRef.current > 0) {
           const pausedDuration = performance.now() - pauseTimeRef.current
           startTimeRef.current += pausedDuration
@@ -618,7 +620,7 @@ export default function App() {
                 <input
                   type="file"
                   accept="image/*"
-                  {...(isAndroid() ? { capture: 'user' } : {})}
+                  {...(isAndroid() || isTossEnvironment() ? { capture: 'user' } : {})}
                   style={{ display: 'none' }}
                   onChange={async e => {
                     const file = e.target.files?.[0]
@@ -852,12 +854,7 @@ export default function App() {
     <>
     <div className="game" style={isAndroid() ? { height: '100vh', boxSizing: 'border-box', paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)', overflow: 'hidden' } : undefined}>
       <div className="hp-bar">
-        <div className="score-info" style={{ cursor: 'pointer' }} onPointerDown={() => {
-          const stage = getStage(scoreRef.current)
-          const next = STAGE_THRESHOLDS[Math.min(stage, STAGE_THRESHOLDS.length - 1)]
-          setScore(next)
-          scoreRef.current = next
-        }}>{ t('game.hits', { n: score }) }</div>
+        <div className="score-info">{ t('game.hits', { n: score }) }</div>
       </div>
 
       <div key={hitEffectKey} className={`opponent ${flash === 'MISS' ? 'miss' : ''}`}>
