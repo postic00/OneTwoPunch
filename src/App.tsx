@@ -560,8 +560,8 @@ export default function App() {
           <div className="home-bottom">
             {livesBlock}
             <div className="start-btn-row">
-              <button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>{t('home.start')}</button>
               <button className="infinite-btn" onClick={() => setShowInfiniteSetup(true)}>{t('home.infinite')}</button>
+              <button className="start-btn" onClick={() => { if (soundOn) playClick(); startGame() }} disabled={lives === 0}>{t('home.start')}</button>
             </div>
             <div className="home-btn-row">
               <button className="settings-btn" onClick={() => setGameState('SETTINGS')}>{t('home.settings')}</button>
@@ -618,6 +618,7 @@ export default function App() {
                 <input
                   type="file"
                   accept="image/*"
+                  {...(isAndroid() ? { capture: 'user' } : {})}
                   style={{ display: 'none' }}
                   onChange={async e => {
                     const file = e.target.files?.[0]

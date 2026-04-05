@@ -1,7 +1,7 @@
 import { loadFullScreenAd, showFullScreenAd } from '@apps-in-toss/web-framework'
 import { getOperationalEnvironment } from '@apps-in-toss/web-bridge'
 
-export const TEST_MODE = true // 배포 시 false로 변경
+export const TEST_MODE = false
 
 
 export function isTossEnvironment(): boolean {
